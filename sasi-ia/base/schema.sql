@@ -1,9 +1,21 @@
 -- Projet SASI — schéma de la base de données
--- PostgreSQL + TimescaleDB (cahier des charges technique, chapitre 4)
+-- PostgreSQL, avec TimescaleDB si elle est disponible
+-- (cahier des charges technique, chapitre 4)
 --
 -- Création :  psql -U sasi -d sasi -f base/schema.sql
+--
+-- TimescaleDB apporte le découpage des tables de mesures, leur compression et
+-- leur purge automatique. Elle n'est pas indispensable au fonctionnement : sans
+-- elle, les mêmes tables existent en PostgreSQL ordinaire, et tout marche — un
+-- peu moins vite sur de longues périodes, sans purge automatique. Le schéma
+-- s'adapte donc à ce qui est installé, pour qu'un poste de développement
+-- n'ait pas à télécharger une image de 550 Mo.
 
-CREATE EXTENSION IF NOT EXISTS timescaledb;
+DO $$ BEGIN
+    CREATE EXTENSION IF NOT EXISTS timescaledb;
+EXCEPTION WHEN OTHERS THEN
+    RAISE NOTICE 'TimescaleDB indisponible : le schéma se limite à PostgreSQL.';
+END $$;
 
 -- ---------------------------------------------------------------- référentiel
 CREATE TABLE IF NOT EXISTS site (
@@ -80,7 +92,11 @@ CREATE TABLE IF NOT EXISTS mesure (
     t_min         REAL,
     source        TEXT NOT NULL DEFAULT 'camera'   -- 'camera' ou 'jumeau'
 );
-SELECT create_hypertable('mesure', 'horodatage', if_not_exists => TRUE);
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'timescaledb') THEN
+        PERFORM create_hypertable('mesure', 'horodatage', if_not_exists => TRUE);
+    END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS mesure_equipement_temps ON mesure (equipement, horodatage DESC);
 
 CREATE TABLE IF NOT EXISTS contexte (
@@ -89,7 +105,11 @@ CREATE TABLE IF NOT EXISTS contexte (
     etat          TEXT NOT NULL,           -- 'marche' ou 'arret'
     charge_pct    REAL
 );
-SELECT create_hypertable('contexte', 'horodatage', if_not_exists => TRUE);
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'timescaledb') THEN
+        PERFORM create_hypertable('contexte', 'horodatage', if_not_exists => TRUE);
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS ambiance (
     horodatage    TIMESTAMPTZ NOT NULL,
@@ -98,7 +118,11 @@ CREATE TABLE IF NOT EXISTS ambiance (
     t_ambiante    REAL,
     humidite_pct  REAL
 );
-SELECT create_hypertable('ambiance', 'horodatage', if_not_exists => TRUE);
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'timescaledb') THEN
+        PERFORM create_hypertable('ambiance', 'horodatage', if_not_exists => TRUE);
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS prediction (
     horodatage    TIMESTAMPTZ NOT NULL,
@@ -109,7 +133,11 @@ CREATE TABLE IF NOT EXISTS prediction (
     score         REAL,
     niveau        TEXT
 );
-SELECT create_hypertable('prediction', 'horodatage', if_not_exists => TRUE);
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'timescaledb') THEN
+        PERFORM create_hypertable('prediction', 'horodatage', if_not_exists => TRUE);
+    END IF;
+END $$;
 
 -- ---------------------------------------------------------------- alertes
 CREATE TABLE IF NOT EXISTS alerte (
@@ -226,18 +254,30 @@ CREATE TABLE IF NOT EXISTS evaluation (
 );
 
 -- ---------------------------------------------------------------- conservation
--- Mesures détaillées : compressées après 7 jours, supprimées après 1 an.
-ALTER TABLE mesure SET (timescaledb.compress, timescaledb.compress_segmentby = 'equipement');
-SELECT add_compression_policy('mesure', INTERVAL '7 days', if_not_exists => TRUE);
-SELECT add_retention_policy('mesure', INTERVAL '1 year', if_not_exists => TRUE);
+-- Compression après 7 jours, purge après 1 an, moyennes par minute : tout cela
+-- relève de TimescaleDB. Sans elle, les tables restent complètes et c'est à
+-- l'exploitant de les purger.
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'timescaledb') THEN
+        RAISE NOTICE 'TimescaleDB absente : ni compression, ni purge automatique,'
+                     ' ni moyennes par minute. Le reste fonctionne.';
+        RETURN;
+    END IF;
 
--- Moyennes par minute, conservées sans limite.
-CREATE MATERIALIZED VIEW IF NOT EXISTS mesure_minute
-WITH (timescaledb.continuous) AS
-SELECT time_bucket('1 minute', horodatage) AS minute,
-       equipement,
-       avg(t_max)  AS t_max_moy,
-       max(t_max)  AS t_max_max,
-       avg(t_moy)  AS t_moy
-FROM mesure
-GROUP BY minute, equipement;
+    -- Mesures détaillées : compressées après 7 jours, supprimées après 1 an.
+    EXECUTE 'ALTER TABLE mesure SET (timescaledb.compress,'
+            ' timescaledb.compress_segmentby = ''equipement'')';
+    PERFORM add_compression_policy('mesure', INTERVAL '7 days', if_not_exists => TRUE);
+    PERFORM add_retention_policy('mesure', INTERVAL '1 year', if_not_exists => TRUE);
+
+    -- Moyennes par minute, conservées sans limite.
+    EXECUTE 'CREATE MATERIALIZED VIEW IF NOT EXISTS mesure_minute'
+            ' WITH (timescaledb.continuous) AS'
+            ' SELECT time_bucket(''1 minute'', horodatage) AS minute,'
+            '        equipement,'
+            '        avg(t_max)  AS t_max_moy,'
+            '        max(t_max)  AS t_max_max,'
+            '        avg(t_moy)  AS t_moy'
+            ' FROM mesure'
+            ' GROUP BY minute, equipement';
+END $$;

@@ -8,12 +8,25 @@ import json
 from datetime import datetime, timezone
 
 
-def _horodatage(texte):
-    if isinstance(texte, datetime):
-        return texte
-    if not texte:
+def _horodatage(valeur):
+    """Convertit en date ce qui circule dans la chaîne.
+
+    Les mesures portent une date au format « 2026-09-19T14:30:10Z », tandis que
+    le moteur d'alertes compte en secondes depuis 1970 : les deux doivent entrer
+    dans la même colonne.
+    """
+    if isinstance(valeur, datetime):
+        return valeur
+    if valeur is None or valeur == "":
         return datetime.now(timezone.utc)
-    return datetime.fromisoformat(str(texte).replace("Z", "+00:00"))
+    if isinstance(valeur, (int, float)):
+        return datetime.fromtimestamp(float(valeur), tz=timezone.utc)
+    texte = str(valeur)
+    try:
+        return datetime.fromisoformat(texte.replace("Z", "+00:00"))
+    except ValueError:
+        # une chaîne qui n'est qu'un nombre de secondes
+        return datetime.fromtimestamp(float(texte), tz=timezone.utc)
 
 
 class Depot:
@@ -74,17 +87,31 @@ class Depot:
     def enregistrer_alerte(self, alerte, explication=None):
         explication = explication or {}
         with self.connexion.cursor() as curseur:
+            # Une alerte évolue : elle monte de niveau, se fait prendre en
+            # charge, s'assigne, puis se clôture. Chaque passage réécrit la
+            # ligne, y compris sa fin et la personne en charge — sans quoi
+            # l'historique relu au redémarrage serait faux.
             curseur.execute(
-                "INSERT INTO alerte (id, equipement, niveau, etat, debut, t_mesuree,"
-                " t_attendue, raison, facteurs, action_conseillee)"
-                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                "INSERT INTO alerte (id, equipement, niveau, etat, debut, fin,"
+                " t_mesuree, t_attendue, raison, facteurs, action_conseillee,"
+                " assignee_a)"
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 " ON CONFLICT (id) DO UPDATE SET niveau = EXCLUDED.niveau,"
-                " etat = EXCLUDED.etat",
+                " etat = EXCLUDED.etat, fin = EXCLUDED.fin,"
+                " assignee_a = EXCLUDED.assignee_a,"
+                " t_mesuree = COALESCE(EXCLUDED.t_mesuree, alerte.t_mesuree),"
+                " t_attendue = COALESCE(EXCLUDED.t_attendue, alerte.t_attendue),"
+                " raison = COALESCE(EXCLUDED.raison, alerte.raison),"
+                " action_conseillee = COALESCE(EXCLUDED.action_conseillee,"
+                "                              alerte.action_conseillee)",
                 (alerte["id"], alerte["equipement"], alerte["niveau"], alerte["etat"],
-                 _horodatage(alerte.get("debut")), alerte.get("t_mesuree"),
-                 alerte.get("t_attendue"), explication.get("raison"),
-                 json.dumps(explication.get("facteurs", [])),
-                 explication.get("action")))
+                 _horodatage(alerte.get("debut")),
+                 _horodatage(alerte["fin"]) if alerte.get("fin") else None,
+                 alerte.get("t_mesuree"), alerte.get("t_attendue"),
+                 explication.get("raison") or alerte.get("raison"),
+                 json.dumps(explication.get("facteurs", alerte.get("facteurs", []))),
+                 explication.get("action") or alerte.get("action"),
+                 alerte.get("assignee_a")))
 
     def enregistrer_evenement(self, identifiant_alerte, evenement):
         with self.connexion.cursor() as curseur:
@@ -111,6 +138,18 @@ class Depot:
                 (alerte.identifiant, _horodatage(None),
                  alerte.evenements[-1].get("par", "inconnu"),
                  alerte.compte_rendu or "", bool(alerte.justifiee)))
+
+    def dernier_numero_alerte(self):
+        """Plus grand numéro d'alerte déjà enregistré, 0 si la table est vide.
+
+        Les identifiants ont la forme « A-0042 » : on en extrait le nombre.
+        """
+        with self.connexion.cursor() as curseur:
+            curseur.execute(
+                "SELECT max(substring(id from '[0-9]+')::integer) FROM alerte"
+                " WHERE id ~ '^A-[0-9]+$'")
+            resultat = curseur.fetchone()[0]
+        return int(resultat or 0)
 
     def lire_alertes(self, depuis_jours=30):
         """Alertes de la période, pour l'application."""

@@ -55,25 +55,40 @@ class ServiceAlertes:
         self._diffuser(equipement, envois, explication)
         return envois
 
+    def _conserver(self, quoi, action):
+        """Écrit en base sans jamais bloquer l'alerte.
+
+        Une base indisponible, une colonne qui change, un horodatage inattendu :
+        rien de tout cela ne doit empêcher de prévenir une équipe. On note
+        l'incident et on continue.
+        """
+        if not self.depot:
+            return False
+        try:
+            action()
+            return True
+        except Exception as souci:
+            print(f"Base : {quoi} non enregistré ({type(souci).__name__} : {souci})",
+                  flush=True)
+            return False
+
     def _diffuser(self, equipement, envois, explication):
         alerte = self.moteur.ouvertes.get(equipement)
         if alerte is not None:
             resume = alerte.resume()
             self.publier(SUJET_ALERTES.format(site=self.site.identifiant),
                          json.dumps(resume))
-            if self.depot:
-                self.depot.enregistrer_alerte(
-                    {**resume, "debut": resume["debut"]}, explication)
+            self._conserver("alerte", lambda: self.depot.enregistrer_alerte(
+                {**resume, "debut": resume["debut"]}, explication))
         self.publier(SUJET_ETATS.format(site=self.site.identifiant),
                      json.dumps({"niveaux": self.niveaux}))
         for envoi in envois:
             if envoi["canal"] == "sms":
                 texte = self._texte_sms(equipement, explication)
                 envoi["reussie"] = bool(self.envoyer_sms(envoi["destinataire"], texte))
-            if self.depot:
-                self.depot.enregistrer_alerte_technique(
-                    {"type": "notification", "message": json.dumps(envoi),
-                     "horodatage": None, "camera": None})
+            self._conserver("notification", lambda: self.depot.enregistrer_alerte_technique(
+                {"type": "notification", "message": json.dumps(envoi),
+                 "horodatage": None, "camera": None}))
 
     def _texte_sms(self, equipement, explication):
         alerte = self.moteur.ouvertes.get(equipement)
@@ -119,11 +134,13 @@ class ServiceAlertes:
 
         resume = alerte.resume()
         self.publier(SUJET_ALERTES.format(site=self.site.identifiant), json.dumps(resume))
-        if self.depot:
-            self.depot.enregistrer_alerte(resume, alerte.explication)
-            self.depot.enregistrer_evenement(alerte.identifiant, alerte.evenements[-1])
-            if action == "cloturer":
-                self.depot.enregistrer_intervention(alerte)
+        self._conserver("alerte", lambda: self.depot.enregistrer_alerte(
+            resume, alerte.explication))
+        self._conserver("événement", lambda: self.depot.enregistrer_evenement(
+            alerte.identifiant, alerte.evenements[-1]))
+        if action == "cloturer":
+            self._conserver("intervention",
+                            lambda: self.depot.enregistrer_intervention(alerte))
         return alerte
 
     def _enregistrer_retour(self, alerte, fiche):
@@ -163,8 +180,19 @@ def principal():
         from connecteur.depot import Depot
         depot = Depot(os.environ["SASI_BASE"])
 
+    # La numérotation reprend après la dernière alerte connue de la base.
+    premier = 1
+    if depot:
+        try:
+            premier = depot.dernier_numero_alerte() + 1
+            if premier > 1:
+                print(f"Numérotation reprise à A-{premier:04d}")
+        except Exception as souci:
+            print(f"Base : dernier numéro illisible ({souci}), reprise à A-0001")
+
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-    service = ServiceAlertes(site, depot=depot,
+    service = ServiceAlertes(site, moteur=MoteurAlertes(premier_numero=premier),
+                             depot=depot,
                              publier=lambda sujet, msg: client.publish(sujet, msg, qos=1),
                              envoyer_sms=envoyer_sms_gammu)
     print(f"Retours du terrain : {service.retours.resume()['total']} déjà enregistrés")

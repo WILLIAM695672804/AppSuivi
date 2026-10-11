@@ -120,6 +120,49 @@ def test_marquage_des_mesures():
     assert (marque["retour"] == "").sum() == 34
 
 
+# ---------------------------------------------------------------- base de données
+class DepotCapricieux:
+    """Une base qui refuse tout : l'alerte doit malgré tout partir."""
+
+    def __init__(self):
+        self.tentatives = 0
+
+    def _echouer(self, *arguments, **details):
+        self.tentatives += 1
+        raise RuntimeError("base indisponible")
+
+    enregistrer_alerte = _echouer
+    enregistrer_evenement = _echouer
+    enregistrer_intervention = _echouer
+    enregistrer_alerte_technique = _echouer
+
+
+def test_une_base_en_panne_nempeche_pas_dalerter():
+    """Prévenir l'équipe passe avant conserver l'historique."""
+    depot = DepotCapricieux()
+    publiees = []
+    service_alertes = ServiceAlertes(
+        SITE, depot=depot, registre_retours=registre(),
+        publier=lambda sujet, message: publiees.append(sujet))
+    service_alertes.traiter_niveau({"equipement": "Z1-MOU-01", "niveau": "urgence",
+                                    "secondes": DEBUT, "raison": "Chauffe",
+                                    "action": "Vérifier"})
+    assert "Z1-MOU-01" in service_alertes.moteur.ouvertes, "l'alerte doit exister"
+    assert any(s.endswith("/alertes") for s in publiees), "elle doit être publiée"
+    assert depot.tentatives > 0, "l'écriture doit avoir été tentée"
+
+
+def test_horodatage_accepte_les_secondes():
+    """Le moteur d'alertes compte en secondes, les mesures en dates."""
+    from datetime import datetime, timezone
+    from connecteur.depot import _horodatage
+    attendu = datetime(2026, 1, 5, 0, 0, tzinfo=timezone.utc)
+    assert _horodatage(attendu.timestamp()) == attendu
+    assert _horodatage(str(attendu.timestamp())) == attendu
+    assert _horodatage("2026-01-05T00:00:00Z") == attendu
+    assert _horodatage(attendu) == attendu
+
+
 # ---------------------------------------------------------------- clôture d'alerte
 def service():
     r = registre()

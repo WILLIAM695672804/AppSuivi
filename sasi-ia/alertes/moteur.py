@@ -68,10 +68,14 @@ class MoteurAlertes:
     """Tient la liste des alertes en cours et décide des notifications."""
 
     def __init__(self, delai_escalade_s=DELAI_ESCALADE_S,
-                 delai_escalade_finale_s=DELAI_ESCALADE_FINALE_S):
+                 delai_escalade_finale_s=DELAI_ESCALADE_FINALE_S,
+                 premier_numero=1):
         self.delai_escalade_s = delai_escalade_s
         self.delai_escalade_finale_s = delai_escalade_finale_s
-        self.numero = count(1)
+        # La numérotation reprend là où la base s'est arrêtée. Sans cela, un
+        # redémarrage rouvrirait « A-0001 » et écraserait l'alerte de la veille
+        # qui porte déjà ce numéro.
+        self.numero = count(premier_numero)
         self.ouvertes = {}        # equipement -> Alerte
         self.historique = []
         self.en_maintenance = set()

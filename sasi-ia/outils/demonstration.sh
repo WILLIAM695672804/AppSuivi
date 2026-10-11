@@ -22,6 +22,11 @@ PYTHON="$RACINE/venv/bin/python"
 
 export SASI_SITE="$SITE"
 export SASI_MQTT="${SASI_MQTT:-localhost}"
+# Base de données : facultative. Si elle tourne, mesures et alertes y sont
+# conservées ; sinon, tout reste en mémoire et disparaît à l'arrêt.
+#   docker compose --profile legere up -d base-legere
+#   ./venv/bin/python outils/initialiser_base.py
+export SASI_BASE="${SASI_BASE:-}"
 
 mkdir -p "$JOURNAUX"
 
@@ -50,6 +55,11 @@ done
 echo "  $etat"
 echo
 
+if [ -n "$SASI_BASE" ]; then
+  echo "› Base de données : $SASI_BASE"
+else
+  echo "› Sans base de données : rien ne sera conservé à l'arrêt."
+fi
 echo "› Interface : http://localhost:8000     (Ctrl+Maj+R pour recharger sans cache)"
 echo "› Jumeau en direct : site $SITE, une mesure toutes les 10 s,"
 echo "  une panne toutes les $PERIODE_PANNE s. Les courbes se redemandent toutes les 10 s."

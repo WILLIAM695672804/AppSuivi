@@ -146,7 +146,10 @@ class ServiceIA:
         self.dernieres_mesures[equipement] = (secondes, mesure["t_max"])
 
         if self.depot:
-            self.depot.enregistrer_prediction(mesure.get("horodatage"), equipement, etat)
+            try:
+                self.depot.enregistrer_prediction(mesure.get("horodatage"), equipement, etat)
+            except Exception as souci:      # juger passe avant conserver
+                print(f"Base : prédiction non enregistrée ({souci})", flush=True)
 
         self.publier(SUJET_JUGEMENTS.format(site=self.site.identifiant), json.dumps({
             "equipement": equipement, "horodatage": mesure.get("horodatage"),

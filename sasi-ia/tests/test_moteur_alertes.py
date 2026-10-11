@@ -140,6 +140,15 @@ def test_historique_conserve_les_alertes_cloturees():
     assert len(m.toutes()) == 1 and m.toutes()[0]["etat"] == "cloturee"
 
 
+def test_numerotation_reprend_apres_la_base():
+    """Un redémarrage ne doit pas réattribuer des numéros déjà en base."""
+    moteur = MoteurAlertes(premier_numero=43)
+    moteur.signaler("Z1-MOU-01", "surveillance", 0.0)
+    assert moteur.ouvertes["Z1-MOU-01"].identifiant == "A-0043"
+    moteur.signaler("Z1-ELV-01", "surveillance", 0.0)
+    assert moteur.ouvertes["Z1-ELV-01"].identifiant == "A-0044"
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     echecs = 0

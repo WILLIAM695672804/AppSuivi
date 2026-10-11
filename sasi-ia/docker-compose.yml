@@ -15,6 +15,11 @@ services:
       - mosquitto_data:/mosquitto/data
     restart: unless-stopped
 
+  # Deux images possibles pour la même base :
+  #   base         PostgreSQL + TimescaleDB, la cible (550 Mo à télécharger)
+  #   base-legere  PostgreSQL seul, suffisant pour développer (80 Mo)
+  # Le schéma s'adapte : sans TimescaleDB, ni compression ni purge automatique,
+  # mais toutes les tables et toutes les écritures fonctionnent.
   base:                           # PostgreSQL + TimescaleDB
     image: timescale/timescaledb:latest-pg16
     environment:
@@ -24,6 +29,22 @@ services:
     ports: ["5432:5432"]
     volumes:
       - base_data:/var/lib/postgresql/data
+      - ./base/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    restart: unless-stopped
+
+  base-legere:                    # PostgreSQL seul, pour les postes à connexion lente
+    image: postgres:16
+    profiles: ["legere"]
+    environment:
+      POSTGRES_USER: sasi
+      POSTGRES_PASSWORD: ${MOT_DE_PASSE_BASE:-sasi}
+      POSTGRES_DB: sasi
+    # Port 5434 : 5432 et 5433 sont souvent déjà pris par une autre base de la
+    # machine. Adresse à utiliser :
+    #   postgresql://sasi:sasi@localhost:5434/sasi
+    ports: ["5434:5432"]
+    volumes:
+      - base_legere_data:/var/lib/postgresql/data
       - ./base/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     restart: unless-stopped
 
@@ -68,3 +89,4 @@ services:
 volumes:
   mosquitto_data:
   base_data:
+  base_legere_data:

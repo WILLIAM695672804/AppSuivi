@@ -456,6 +456,102 @@
       "alerte": "A-0001",
       "enregistre_le": "2026-09-23T21:21:37+00:00",
       "pris_en_compte_le": "2026-09-23T21:45:52+00:00"
+    },
+    {
+      "id": "R-0039",
+      "genre": "confirme",
+      "equipement": "Z1-ELV-01",
+      "debut": 1767600060.0,
+      "fin": 1767604860.0,
+      "motif": "Roulement remplacé.",
+      "par": "agent",
+      "alerte": "A-0001",
+      "enregistre_le": "2026-10-11T14:32:00+00:00",
+      "pris_en_compte_le": null
+    },
+    {
+      "id": "R-0040",
+      "genre": "confirme",
+      "equipement": "Z2-CHE-01",
+      "debut": 1791729418.236342,
+      "fin": 1791729441.948203,
+      "motif": "Brûleur bloqué en position haute, régulation remplacée.",
+      "par": "Serge M.",
+      "alerte": "A-0001",
+      "enregistre_le": "2026-10-11T14:37:21+00:00",
+      "pris_en_compte_le": null
+    },
+    {
+      "id": "R-0041",
+      "genre": "confirme",
+      "equipement": "Z1-ELV-01",
+      "debut": 1767600060.0,
+      "fin": 1767604860.0,
+      "motif": "Roulement remplacé.",
+      "par": "agent",
+      "alerte": "A-0001",
+      "enregistre_le": "2026-10-11T14:38:12+00:00",
+      "pris_en_compte_le": null
+    },
+    {
+      "id": "R-0042",
+      "genre": "confirme",
+      "equipement": "Z7-CMP-01",
+      "debut": 1791729574.981555,
+      "fin": 1791730105.6919787,
+      "motif": "Filtre encrassé, nettoyé.",
+      "par": "Serge M.",
+      "alerte": "A-0001",
+      "enregistre_le": "2026-10-11T14:48:25+00:00",
+      "pris_en_compte_le": null
+    },
+    {
+      "id": "R-0043",
+      "genre": "confirme",
+      "equipement": "Z1-ELV-01",
+      "debut": 1767600060.0,
+      "fin": 1767604860.0,
+      "motif": "Roulement remplacé.",
+      "par": "agent",
+      "alerte": "A-0001",
+      "enregistre_le": "2026-10-11T14:49:22+00:00",
+      "pris_en_compte_le": null
+    },
+    {
+      "id": "R-0044",
+      "genre": "confirme",
+      "equipement": "Z1-ELV-01",
+      "debut": 1767600060.0,
+      "fin": 1767604860.0,
+      "motif": "Roulement remplacé.",
+      "par": "agent",
+      "alerte": "A-0001",
+      "enregistre_le": "2026-10-11T14:49:52+00:00",
+      "pris_en_compte_le": null
+    },
+    {
+      "id": "R-0045",
+      "genre": "confirme",
+      "equipement": "Z1-ELV-01",
+      "debut": 1767600060.0,
+      "fin": 1767604860.0,
+      "motif": "Roulement remplacé.",
+      "par": "agent",
+      "alerte": "A-0001",
+      "enregistre_le": "2026-10-11T14:50:06+00:00",
+      "pris_en_compte_le": null
+    },
+    {
+      "id": "R-0046",
+      "genre": "confirme",
+      "equipement": "Z1-ELV-01",
+      "debut": 1791726667.202788,
+      "fin": 1791731587.202788,
+      "motif": "Essai de chaîne : roulement vérifié.",
+      "par": "agent.essai",
+      "alerte": "A-0001",
+      "enregistre_le": "2026-10-11T14:50:07+00:00",
+      "pris_en_compte_le": null
     }
   ]
 }
