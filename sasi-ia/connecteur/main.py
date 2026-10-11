@@ -15,12 +15,17 @@ import json
 import os
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 
 from ia import controles
 from ia.site import Site
 
+RACINE = Path(__file__).resolve().parents[1]
+
 SUJET_MESURES = "sasi/{site}/+/mesures"
 SUJET_CONTEXTE = "sasi/{site}/contexte"
+SUJET_PANNES = "sasi/{site}/jumeau/pannes"
+SUJET_HORLOGE = "sasi/{site}/jumeau/horloge"
 SUJET_VALIDEES = "sasi/{site}/interne/mesures_validees"
 SUJET_TECHNIQUE = "sasi/{site}/interne/alertes_techniques"
 
@@ -44,10 +49,15 @@ def horodatage_en_secondes(horodatage):
 
 
 class Connecteur:
-    def __init__(self, site, depot=None, publier=None):
+    def __init__(self, site, depot=None, publier=None, journal=None):
         self.site = site
         self.depot = depot                 # écriture en base (facultative)
         self.publier = publier or (lambda sujet, message: None)
+        # Journal des pannes annoncées par le jumeau : vérité de référence du
+        # contrôle automatique (conventions, 6.4). Facultatif en service réel,
+        # où personne n'annonce les pannes à l'avance.
+        self.journal = journal
+        self.horloge = None                # mode et facteur annoncés par le jumeau
         self.connus = set(site.liste())
         self.surveillance = controles.SurveillanceCameras()
         self.compteurs = {"recues": 0, "conservees": 0, "ecartees": 0}
@@ -135,6 +145,29 @@ class Connecteur:
                                             self.site.identifiant, fiche["ambiance"])
         return lignes
 
+    def traiter_panne(self, charge_utile):
+        """Enregistre une panne annoncée par le jumeau (début ou fin)."""
+        if self.journal is None:
+            return None
+        complete = self.journal.appliquer(charge_utile)
+        if complete:
+            print(f"Panne {complete['id']} close : {complete['equipement']}, "
+                  f"{complete['type']}")
+        return complete
+
+    def traiter_horloge(self, charge_utile):
+        """Retient le mode d'horloge du jumeau : temps réel ou accéléré."""
+        try:
+            fiche = json.loads(charge_utile)
+        except (ValueError, TypeError):
+            return None
+        if not isinstance(fiche, dict) or fiche.get("mode") not in ("reel", "accelere"):
+            return None
+        self.horloge = fiche
+        print(f"Horloge du jumeau : {fiche['mode']}, facteur {fiche.get('facteur', 1)}"
+              + (f", scénario « {fiche['scenario']} »" if fiche.get("scenario") else ""))
+        return fiche
+
     # ---------- surveillance des caméras ----------
     def controler(self, maintenant=None):
         maintenant = self.maintenant(maintenant)
@@ -160,18 +193,26 @@ def principal():
         from connecteur.depot import Depot
         depot = Depot(os.environ["SASI_BASE"])
 
+    from connecteur.journal_pannes import JournalPannes
+    journal = JournalPannes(
+        RACINE / "donnees" / site.identifiant.lower() / "journal_jumeau.csv")
+
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-    connecteur = Connecteur(site, depot,
+    connecteur = Connecteur(site, depot, journal=journal,
                             publier=lambda sujet, message: client.publish(sujet, message, qos=1))
 
     def a_la_connexion(client, donnees, drapeaux, code, proprietes=None):
-        client.subscribe(SUJET_MESURES.format(site=site.identifiant), qos=1)
-        client.subscribe(SUJET_CONTEXTE.format(site=site.identifiant), qos=1)
+        for sujet in (SUJET_MESURES, SUJET_CONTEXTE, SUJET_PANNES, SUJET_HORLOGE):
+            client.subscribe(sujet.format(site=site.identifiant), qos=1)
         print(f"Connecteur prêt — site {site.identifiant}, serveur {adresse}")
 
     def a_la_reception(client, donnees, message):
         if message.topic.endswith("/contexte"):
             connecteur.traiter_contexte(message.payload)
+        elif message.topic.endswith("/jumeau/pannes"):
+            connecteur.traiter_panne(message.payload)
+        elif message.topic.endswith("/jumeau/horloge"):
+            connecteur.traiter_horloge(message.payload)
         else:
             connecteur.traiter_message(message.topic, message.payload)
         if time.time() - connecteur.dernier_reel >= PERIODE_CONTROLE_S:

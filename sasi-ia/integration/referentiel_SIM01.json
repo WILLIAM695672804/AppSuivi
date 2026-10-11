@@ -1,0 +1,295 @@
+{
+  "site": "SIM01",
+  "nom_site": "Site pilote — brasserie",
+  "version": 1,
+  "zones": {
+    "1": "Réception et stockage des matières premières",
+    "2": "Salle de brassage",
+    "3": "Cave de fermentation et de garde",
+    "4": "Chaufferie et armoires électriques",
+    "5": "Conditionnement",
+    "6": "Station de nettoyage en place",
+    "7": "Stockage CO2 et gaz techniques"
+  },
+  "familles": {
+    "MOT": "Moteurs et convoyeurs",
+    "ARM": "Armoires électriques",
+    "CHD": "Équipements chauds",
+    "POM": "Pompes et compresseurs",
+    "RES": "Résistances de chauffe"
+  },
+  "equipements": [
+    {
+      "id": "Z1-ELV-01",
+      "nom": "L'élévateur à godets",
+      "zone": 1,
+      "famille": "MOT",
+      "camera": "CAM-Z1",
+      "criticite": 2,
+      "position_plan": null,
+      "t_normale_indicative": [
+        40,
+        70
+      ],
+      "temps_montee_min": 35,
+      "seuil_inspection": 70,
+      "seuil_urgence": 80
+    },
+    {
+      "id": "Z1-VIS-01",
+      "nom": "La vis à grain",
+      "zone": 1,
+      "famille": "MOT",
+      "camera": "CAM-Z1",
+      "criticite": 2,
+      "position_plan": null,
+      "t_normale_indicative": [
+        40,
+        70
+      ],
+      "temps_montee_min": 35,
+      "seuil_inspection": 70,
+      "seuil_urgence": 80
+    },
+    {
+      "id": "Z1-MOU-01",
+      "nom": "Le moulin",
+      "zone": 1,
+      "famille": "MOT",
+      "camera": "CAM-Z1",
+      "criticite": 2,
+      "position_plan": null,
+      "t_normale_indicative": [
+        20,
+        35
+      ],
+      "temps_montee_min": 25,
+      "seuil_inspection": 35,
+      "seuil_urgence": 40
+    },
+    {
+      "id": "Z2-CHE-01",
+      "nom": "La chaudière d'ébullition",
+      "zone": 2,
+      "famille": "CHD",
+      "camera": "CAM-Z2",
+      "criticite": 2,
+      "position_plan": null,
+      "t_normale_indicative": [
+        150,
+        250
+      ],
+      "temps_montee_min": 50,
+      "seuil_inspection": 280,
+      "seuil_urgence": 300
+    },
+    {
+      "id": "Z3-GFG-01",
+      "nom": "Le groupe froid",
+      "zone": 3,
+      "famille": "POM",
+      "camera": "CAM-Z3",
+      "criticite": 3,
+      "position_plan": null,
+      "t_normale_indicative": [
+        -8,
+        -6
+      ],
+      "temps_montee_min": 60,
+      "seuil_inspection": 9,
+      "seuil_urgence": 24
+    },
+    {
+      "id": "Z3-PTR-01",
+      "nom": "La pompe de transfert",
+      "zone": 3,
+      "famille": "POM",
+      "camera": "CAM-Z3",
+      "criticite": 1,
+      "position_plan": null,
+      "t_normale_indicative": [
+        40,
+        60
+      ],
+      "temps_montee_min": 22,
+      "seuil_inspection": 75,
+      "seuil_urgence": 90
+    },
+    {
+      "id": "Z4-CHV-01",
+      "nom": "La chaudière vapeur",
+      "zone": 4,
+      "famille": "CHD",
+      "camera": "CAM-Z4",
+      "criticite": 3,
+      "position_plan": null,
+      "t_normale_indicative": [
+        150,
+        230
+      ],
+      "temps_montee_min": 45,
+      "seuil_inspection": 240,
+      "seuil_urgence": 245
+    },
+    {
+      "id": "Z4-ARM-01-A",
+      "nom": "La phase A de l'armoire",
+      "zone": 4,
+      "famille": "ARM",
+      "camera": "CAM-Z4",
+      "criticite": 3,
+      "position_plan": null,
+      "t_normale_indicative": [
+        15,
+        35
+      ],
+      "temps_montee_min": 15,
+      "seuil_inspection": 50,
+      "seuil_urgence": 65
+    },
+    {
+      "id": "Z4-ARM-01-B",
+      "nom": "La phase B de l'armoire",
+      "zone": 4,
+      "famille": "ARM",
+      "camera": "CAM-Z4",
+      "criticite": 3,
+      "position_plan": null,
+      "t_normale_indicative": [
+        15,
+        35
+      ],
+      "temps_montee_min": 15,
+      "seuil_inspection": 50,
+      "seuil_urgence": 65
+    },
+    {
+      "id": "Z4-ARM-01-C",
+      "nom": "La phase C de l'armoire",
+      "zone": 4,
+      "famille": "ARM",
+      "camera": "CAM-Z4",
+      "criticite": 3,
+      "position_plan": null,
+      "t_normale_indicative": [
+        15,
+        35
+      ],
+      "temps_montee_min": 15,
+      "seuil_inspection": 50,
+      "seuil_urgence": 65
+    },
+    {
+      "id": "Z5-ETQ-01",
+      "nom": "L'étiqueteuse",
+      "zone": 5,
+      "famille": "MOT",
+      "camera": "CAM-Z5",
+      "criticite": 1,
+      "position_plan": null,
+      "t_normale_indicative": [
+        40,
+        45
+      ],
+      "temps_montee_min": 25,
+      "seuil_inspection": 60,
+      "seuil_urgence": 75
+    },
+    {
+      "id": "Z5-PAS-01",
+      "nom": "Le pasteurisateur",
+      "zone": 5,
+      "famille": "CHD",
+      "camera": "CAM-Z5",
+      "criticite": 2,
+      "position_plan": null,
+      "t_normale_indicative": [
+        60,
+        67
+      ],
+      "temps_montee_min": 50,
+      "seuil_inspection": 82,
+      "seuil_urgence": 97
+    },
+    {
+      "id": "Z5-CNV-01",
+      "nom": "Le convoyeur",
+      "zone": 5,
+      "famille": "MOT",
+      "camera": "CAM-Z5",
+      "criticite": 1,
+      "position_plan": null,
+      "t_normale_indicative": [
+        40,
+        45
+      ],
+      "temps_montee_min": 25,
+      "seuil_inspection": 60,
+      "seuil_urgence": 75
+    },
+    {
+      "id": "Z6-CUV-01",
+      "nom": "La cuve de nettoyage",
+      "zone": 6,
+      "famille": "CHD",
+      "camera": "CAM-Z6",
+      "criticite": 2,
+      "position_plan": null,
+      "t_normale_indicative": [
+        70,
+        85
+      ],
+      "temps_montee_min": 25,
+      "seuil_inspection": 100,
+      "seuil_urgence": 115
+    },
+    {
+      "id": "Z6-RES-01",
+      "nom": "La résistance de chauffe",
+      "zone": 6,
+      "famille": "RES",
+      "camera": "CAM-Z6",
+      "criticite": 3,
+      "position_plan": null,
+      "t_normale_indicative": [
+        50,
+        150
+      ],
+      "temps_montee_min": 15,
+      "seuil_inspection": 165,
+      "seuil_urgence": 180
+    },
+    {
+      "id": "Z6-PCI-01",
+      "nom": "La pompe de circulation",
+      "zone": 6,
+      "famille": "POM",
+      "camera": "CAM-Z6",
+      "criticite": 2,
+      "position_plan": null,
+      "t_normale_indicative": [
+        10,
+        90
+      ],
+      "temps_montee_min": 22,
+      "seuil_inspection": 100,
+      "seuil_urgence": 115
+    },
+    {
+      "id": "Z7-CMP-01",
+      "nom": "Le compresseur",
+      "zone": 7,
+      "famille": "POM",
+      "camera": "CAM-Z7",
+      "criticite": 2,
+      "position_plan": null,
+      "t_normale_indicative": [
+        30,
+        40
+      ],
+      "temps_montee_min": 30,
+      "seuil_inspection": 95,
+      "seuil_urgence": 110
+    }
+  ]
+}

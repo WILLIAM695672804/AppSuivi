@@ -552,9 +552,14 @@ def signaler_manque(identifiant: str, demande: SignalementManque):
 
 @app.get("/api/referentiel")
 def referentiel():
-    """Liste de référence, relue par le jumeau numérique (conventions, 6.6)."""
-    return {"site": SITE.identifiant, "version": 1,
-            "equipements": [dict(SITE.equipements[e]) for e in SITE.liste()]}
+    """Liste de référence, relue par le jumeau numérique (conventions, 6.6).
+
+    Les noms des équipements n'ont qu'une source : ce service. Le jumeau la relit
+    au démarrage plutôt que de recopier la liste, faute de quoi « Z4-ARM-1 » d'un
+    côté et « Z4-ARM-01 » de l'autre finissent par se croiser sans se reconnaître.
+    """
+    from integration.referentiel import depuis_site
+    return depuis_site(SITE)
 
 
 @app.websocket("/ws/temps-reel")
