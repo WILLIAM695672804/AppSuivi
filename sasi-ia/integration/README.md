@@ -154,6 +154,17 @@ V-01, V-05 et V-06 sont vérifiées automatiquement par `tests/test_integration.
 | `emetteur_reference.py` | Publie un flux conforme, à copier ou à comparer |
 | `referentiel.py` | Charge la liste de référence : service HTTP, fichier, ou site local |
 | `referentiel_SIM01.json` | La liste du site pilote, exportée |
+| `schemas/*.json` | Les six messages en JSON Schema, pour les autres langages |
+| `schemas.py` | Engendre ces schémas à partir du contrat |
+
+Si le jumeau est écrit en C# ou en JavaScript, `contrat.py` ne sert que de
+documentation : prenez `schemas/*.json`, exploitables avec n'importe quelle
+bibliothèque de validation JSON Schema (draft 2020-12). Ils ne sont pas recopiés
+du contrat mais engendrés depuis ses constantes, et un test compare les fichiers
+livrés à ce que le contrat produit — ils ne peuvent donc pas se désynchroniser.
+Ils contrôlent la forme seule : l'appartenance d'un équipement à la liste de
+référence, l'ordre des trois températures et la cadence restent du ressort du
+vérificateur.
 
 `contrat.py` n'utilise que la bibliothèque standard : il se copie tel quel dans
 un autre projet. Les tests vérifient qu'il ne s'écarte pas du code — les sujets,

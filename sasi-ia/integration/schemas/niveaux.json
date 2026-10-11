@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sasi.local/schemas/niveaux.json",
+  "title": "Niveau de chaque équipement",
+  "description": "sasi/<site>/niveaux — à chaque changement, pour colorer la maquette",
+  "x-contrat": "1.1",
+  "type": "object",
+  "properties": {
+    "horodatage": {
+      "description": "Heure universelle 2026-09-19T14:30:10Z, ou secondes Unix",
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+        },
+        {
+          "type": "number"
+        }
+      ]
+    },
+    "niveaux": {
+      "type": "object",
+      "description": "identifiant d'équipement → niveau",
+      "additionalProperties": {
+        "enum": [
+          "normal",
+          "information",
+          "surveillance",
+          "inspection",
+          "urgence"
+        ]
+      }
+    }
+  },
+  "required": [
+    "niveaux"
+  ]
+}

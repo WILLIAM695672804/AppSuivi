@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from connecteur.journal_pannes import JournalPannes
 from connecteur.main import Connecteur, SUJET_CONTEXTE, SUJET_HORLOGE, SUJET_PANNES
 from ia.site import Site
-from integration import contrat, referentiel
+from integration import contrat, referentiel, schemas
 from integration.emetteur_reference import DEBUT_PAR_DEFAUT, Emetteur
 from integration.verificateur import Verificateur
 
@@ -422,6 +422,66 @@ def test_rapport_conclut_sur_le_verdict():
     verificateur = Verificateur("SIM01", REFERENTIEL)
     verificateur.examiner("sasi/SIM01/CAM-Z1/mesures", mesures())
     assert "Contrat respecté" in verificateur.rapport()
+
+
+# -------------------------------------------------------------- schémas JSON
+def test_les_schemas_du_disque_ne_derivent_pas():
+    """Les fichiers livrés doivent correspondre au contrat : à régénérer sinon.
+
+        ./venv/bin/python integration/schemas.py
+    """
+    for nom, attendu in schemas.tous().items():
+        chemin = schemas.DOSSIER / f"{nom}.json"
+        assert chemin.exists(), f"{chemin.name} absent : régénérez les schémas"
+        sur_disque = json.loads(chemin.read_text(encoding="utf-8"))
+        assert sur_disque == attendu, f"{nom}.json a dérivé du contrat"
+
+
+def test_les_schemas_couvrent_tous_les_messages():
+    """Un sujet du contrat sans schéma serait un trou dans le kit."""
+    sujets = contrat.sujets("SIM01")
+    attendus = set(sujets["entrants"]) | set(sujets["sortants"])
+    assert set(schemas.tous()) == attendus
+
+
+def test_les_enumerations_viennent_du_contrat():
+    tous = schemas.tous()
+    assert tous["niveaux"]["properties"]["niveaux"][
+        "additionalProperties"]["enum"] == list(contrat.NIVEAUX)
+    assert tous["mesures"]["properties"]["source"]["enum"] == list(contrat.SOURCES)
+    assert tous["contexte"]["properties"]["equipements"]["items"][
+        "properties"]["etat"]["enum"] == list(contrat.ETATS_MARCHE)
+    assert tous["pannes"]["properties"]["evenement"]["enum"] == list(
+        contrat.EVENEMENTS_PANNE)
+
+
+def test_les_schemas_acceptent_l_emetteur_de_reference():
+    """Un schéma exigeant un champ que personne n'envoie ne vaut rien."""
+    tous = schemas.tous()
+    vus = set()
+    for sujet, charge in collecter(pannes=["Z1-ELV-01:derive_lente:8"]):
+        nature = contrat.genre(sujet)
+        schema = tous[nature]
+        vus.add(nature)
+        for champ in schema["required"]:
+            assert champ in charge, f"{nature} : champ « {champ} » exigé, non envoyé"
+        for champ, regle in schema["properties"].items():
+            if "enum" in regle and champ in charge:
+                assert charge[champ] in regle["enum"], \
+                    f"{nature}.{champ} = {charge[champ]!r} hors énumération"
+    assert vus == {"mesures", "contexte", "pannes", "horloge"}
+
+
+def test_les_schemas_acceptent_une_alerte_reelle():
+    from alertes.moteur import MoteurAlertes
+    moteur = MoteurAlertes()
+    moteur.signaler("Z1-ELV-01", "inspection", 1789000000.0, {"raison": "essai"})
+    resume = moteur.ouvertes["Z1-ELV-01"].resume()
+    schema = schemas.tous()["alertes"]
+    for champ in schema["required"]:
+        assert champ in resume, f"champ « {champ} » exigé, absent du résumé publié"
+    assert resume["niveau"] in schema["properties"]["niveau"]["enum"]
+    assert resume["etat"] in schema["properties"]["etat"]["enum"]
 
 
 if __name__ == "__main__":

@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sasi.local/schemas/contexte.json",
+  "title": "Contexte de fonctionnement",
+  "description": "sasi/<site>/contexte — à chaque changement, au moins toutes les 60 s",
+  "x-contrat": "1.1",
+  "type": "object",
+  "properties": {
+    "site": {
+      "type": "string",
+      "minLength": 1
+    },
+    "horodatage": {
+      "description": "Heure universelle 2026-09-19T14:30:10Z, ou secondes Unix",
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+        },
+        {
+          "type": "number"
+        }
+      ]
+    },
+    "equipements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "equipement": {
+            "type": "string",
+            "pattern": "^Z\\d+-[A-Z]{3}-\\d{2}(-[A-Z])?$"
+          },
+          "etat": {
+            "enum": [
+              "marche",
+              "arret"
+            ]
+          },
+          "charge_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "equipement"
+        ]
+      }
+    },
+    "ambiance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "zone": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "t_ambiante": {
+            "description": "Degrés Celsius, une décimale ; « null » si la valeur manque",
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": -30.0,
+            "maximum": 1000.0
+          },
+          "humidite_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "zone"
+        ]
+      }
+    }
+  },
+  "required": [
+    "site",
+    "horodatage"
+  ]
+}
