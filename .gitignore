@@ -1,0 +1,27 @@
+# Environnement Python : reconstruit par requirements.txt
+sasi-ia/venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Dépendances du frontend : reconstruites par npm install
+sasi-ia/frontend/node_modules/
+sasi-ia/frontend/dist/
+
+# Données simulées : 1,1 Go, reproduites par outils/simulateur.py
+sasi-ia/donnees/
+
+# Versions successives des modèles : volumineuses et régénérables par
+# lancer_site.py. Seule la version en service est suivie (modeles/<site>/*.txt),
+# pour pouvoir redémarrer sans réentraîner.
+sasi-ia/modeles/*/versions/
+
+# Journaux d'exécution
+sasi-ia/journaux/
+*.log
+
+# Fichiers temporaires du système
+.DS_Store
+Thumbs.db
+*~
+*.swp

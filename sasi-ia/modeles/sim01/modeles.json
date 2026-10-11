@@ -1,0 +1,205 @@
+{
+  "site": "SIM01",
+  "version": "v19",
+  "entraine_le": "2026-09-23T22:40:38",
+  "entrees": [
+    "charge_pct",
+    "etat_marche",
+    "t_ambiante",
+    "minutes_depuis_demarrage",
+    "minutes_depuis_arret",
+    "charge_moy_30min",
+    "heure",
+    "jour_semaine",
+    "plage_basse",
+    "plage_haute",
+    "fraction_chauffe",
+    "fraction_refroidissement"
+  ],
+  "familles": [
+    "ARM",
+    "CHD",
+    "MOT",
+    "POM",
+    "RES"
+  ],
+  "erreurs": {
+    "ARM": 0.280375984559557,
+    "CHD": 0.41534711986611955,
+    "MOT": 0.27857843171529695,
+    "POM": 0.29109357911474254,
+    "RES": 0.4850269679719158
+  },
+  "calibrages": {
+    "Z1-ELV-01": {
+      "etabli": {
+        "biais": 0.0033237387243705285,
+        "dispersion": 1.2366180316160222
+      },
+      "transitoire": {
+        "biais": 0.03788239310699382,
+        "dispersion": 3.1167848212308265
+      }
+    },
+    "Z1-MOU-01": {
+      "etabli": {
+        "biais": -0.009035895521769532,
+        "dispersion": 1.1570537171804587
+      },
+      "transitoire": {
+        "biais": -0.0740738592375898,
+        "dispersion": 1.7001117618452257
+      }
+    },
+    "Z1-VIS-01": {
+      "etabli": {
+        "biais": -0.007990425256512168,
+        "dispersion": 1.3426883682417268
+      },
+      "transitoire": {
+        "biais": 0.05985094377461664,
+        "dispersion": 3.045551435559875
+      }
+    },
+    "Z2-CHE-01": {
+      "etabli": {
+        "biais": 0.0010789612878419064,
+        "dispersion": 4.359767262217013
+      },
+      "transitoire": {
+        "biais": 0.17905948156987606,
+        "dispersion": 37.16427115387179
+      }
+    },
+    "Z3-GFG-01": {
+      "etabli": {
+        "biais": -0.0002275170341556887,
+        "dispersion": 1.0305520104247896
+      },
+      "transitoire": {
+        "biais": -0.0002275170341556887,
+        "dispersion": 1.0305520104247896
+      }
+    },
+    "Z3-PTR-01": {
+      "etabli": {
+        "biais": -0.0009056018980420077,
+        "dispersion": 1.0942184357437812
+      },
+      "transitoire": {
+        "biais": 0.0005054231007877164,
+        "dispersion": 5.263386166951152
+      }
+    },
+    "Z4-ARM-01-A": {
+      "etabli": {
+        "biais": -0.0007134208525521046,
+        "dispersion": 2.0999986467532166
+      },
+      "transitoire": {
+        "biais": -0.005952344445862678,
+        "dispersion": 1.1271634134170825
+      }
+    },
+    "Z4-ARM-01-B": {
+      "etabli": {
+        "biais": 0.00039667905599927167,
+        "dispersion": 1.2771713669134686
+      },
+      "transitoire": {
+        "biais": 0.02164027705190108,
+        "dispersion": 1.0622981252676318
+      }
+    },
+    "Z4-ARM-01-C": {
+      "etabli": {
+        "biais": 0.003677349241932859,
+        "dispersion": 2.389544740562778
+      },
+      "transitoire": {
+        "biais": -0.012354120707030347,
+        "dispersion": 1.2049170092390258
+      }
+    },
+    "Z4-CHV-01": {
+      "etabli": {
+        "biais": -0.023608527591967743,
+        "dispersion": 7.400040673344896
+      },
+      "transitoire": {
+        "biais": -0.02609833093152858,
+        "dispersion": 40.71547685371222
+      }
+    },
+    "Z5-CNV-01": {
+      "etabli": {
+        "biais": -6.057067507825309e-05,
+        "dispersion": 1.05260239241436
+      },
+      "transitoire": {
+        "biais": -0.0010267304794329135,
+        "dispersion": 1.662234191401157
+      }
+    },
+    "Z5-ETQ-01": {
+      "etabli": {
+        "biais": 0.003416025353978114,
+        "dispersion": 1.0467858090520963
+      },
+      "transitoire": {
+        "biais": 0.07525315410843803,
+        "dispersion": 1.4383560078958524
+      }
+    },
+    "Z5-PAS-01": {
+      "etabli": {
+        "biais": -9.141658046019074e-05,
+        "dispersion": 1.7516424262060264
+      },
+      "transitoire": {
+        "biais": 0.021353721580521068,
+        "dispersion": 7.13836255117948
+      }
+    },
+    "Z6-CUV-01": {
+      "etabli": {
+        "biais": -0.004536007845349133,
+        "dispersion": 2.0441761946618806
+      },
+      "transitoire": {
+        "biais": -0.0035539478042494466,
+        "dispersion": 6.713489025822673
+      }
+    },
+    "Z6-PCI-01": {
+      "etabli": {
+        "biais": 0.002212578786467745,
+        "dispersion": 4.9089955269662156
+      },
+      "transitoire": {
+        "biais": 0.12440297179649917,
+        "dispersion": 11.879647028234006
+      }
+    },
+    "Z6-RES-01": {
+      "etabli": {
+        "biais": 0.0016005820971276563,
+        "dispersion": 6.249996494262503
+      },
+      "transitoire": {
+        "biais": 0.1451363387845923,
+        "dispersion": 28.198073791640276
+      }
+    },
+    "Z7-CMP-01": {
+      "etabli": {
+        "biais": 0.0009204877357618102,
+        "dispersion": 1.1150252246538637
+      },
+      "transitoire": {
+        "biais": 0.0009204877357618102,
+        "dispersion": 1.1150252246538637
+      }
+    }
+  }
+}

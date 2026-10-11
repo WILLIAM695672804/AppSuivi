@@ -1,0 +1,882 @@
+{
+  "site": {
+    "id": "SIM01",
+    "nom": "Site pilote — brasserie",
+    "secteur": "Agroalimentaire (brasserie)",
+    "ville": "Douala",
+    "source_valeurs": "Document « Valeur normale et seuil des équipements » (22/09/2026)"
+  },
+  "zones": {
+    "1": "Réception et stockage des matières premières",
+    "2": "Salle de brassage",
+    "3": "Cave de fermentation et de garde",
+    "4": "Chaufferie et armoires électriques",
+    "5": "Conditionnement",
+    "6": "Station de nettoyage en place",
+    "7": "Stockage CO2 et gaz techniques"
+  },
+  "familles": {
+    "MOT": "Moteurs et convoyeurs",
+    "ARM": "Armoires électriques",
+    "CHD": "Équipements chauds",
+    "POM": "Pompes et compresseurs",
+    "RES": "Résistances de chauffe"
+  },
+  "planning": {
+    "mouture": {
+      "jours": "lundi-samedi",
+      "debut": 6,
+      "fin": 14,
+      "charge": 85
+    },
+    "brassage": {
+      "jours": "lundi-samedi",
+      "debut": 7,
+      "fin": 16,
+      "charge": 90
+    },
+    "chaufferie": {
+      "jours": "lundi-samedi",
+      "debut": 5,
+      "fin": 22,
+      "charge": 75
+    },
+    "conditionnement": {
+      "jours": "lundi-samedi",
+      "debut": 6,
+      "fin": 22,
+      "charge": 80
+    },
+    "nettoyage": {
+      "jours": "lundi-samedi",
+      "debut": 22,
+      "fin": 23.5,
+      "charge": 95
+    },
+    "continu": {
+      "jours": "tous",
+      "debut": 0,
+      "fin": 24,
+      "charge": 70
+    }
+  },
+  "climat": {
+    "base": 28.0,
+    "amplitude": 4.0,
+    "heure_maximum": 15,
+    "humidite": [
+      70,
+      90
+    ],
+    "zones_particulieres": {
+      "3": {
+        "base": 14.0,
+        "amplitude": 1.5
+      },
+      "4": {
+        "decalage": 7.0
+      }
+    }
+  },
+  "groupes_jumeaux": [
+    [
+      "Z4-ARM-01-A",
+      "Z4-ARM-01-B",
+      "Z4-ARM-01-C"
+    ]
+  ],
+  "equipements": [
+    {
+      "id": "Z1-ELV-01",
+      "nom": "L'élévateur à godets",
+      "camera": "CAM-Z1",
+      "zone": 1,
+      "famille": "MOT",
+      "activite": "mouture",
+      "plage_basse": 40,
+      "plage_haute": 70,
+      "temps_montee_min": 35,
+      "criticite": 2,
+      "action": null,
+      "seuil_inspection": 70,
+      "seuil_urgence": 80
+    },
+    {
+      "id": "Z1-VIS-01",
+      "nom": "La vis à grain",
+      "camera": "CAM-Z1",
+      "zone": 1,
+      "famille": "MOT",
+      "activite": "mouture",
+      "plage_basse": 40,
+      "plage_haute": 70,
+      "temps_montee_min": 35,
+      "criticite": 2,
+      "action": null,
+      "seuil_inspection": 70,
+      "seuil_urgence": 80
+    },
+    {
+      "id": "Z1-MOU-01",
+      "nom": "Le moulin",
+      "camera": "CAM-Z1",
+      "zone": 1,
+      "famille": "MOT",
+      "activite": "mouture",
+      "plage_basse": 20,
+      "plage_haute": 35,
+      "temps_montee_min": 25,
+      "criticite": 2,
+      "action": null,
+      "seuil_inspection": 35,
+      "seuil_urgence": 40,
+      "remarque": "À vérifier : une plage de 20 à 35 °C est à peine au-dessus de l'ambiance de Douala (jusqu'à 33 °C) ; le seuil de 35 °C risque de se déclencher par forte chaleur."
+    },
+    {
+      "id": "Z2-CHE-01",
+      "nom": "La chaudière d'ébullition",
+      "camera": "CAM-Z2",
+      "zone": 2,
+      "famille": "CHD",
+      "activite": "brassage",
+      "plage_basse": 150,
+      "plage_haute": 250,
+      "temps_montee_min": 50,
+      "criticite": 2,
+      "action": null,
+      "seuil_inspection": 280,
+      "seuil_urgence": 300
+    },
+    {
+      "id": "Z3-GFG-01",
+      "nom": "Le groupe froid",
+      "camera": "CAM-Z3",
+      "zone": 3,
+      "famille": "POM",
+      "activite": "continu",
+      "plage_basse": -8,
+      "plage_haute": -6,
+      "temps_montee_min": 60,
+      "criticite": 3,
+      "action": "Contrôler le compresseur frigorifique et le circuit de glycol ; vérifier la charge en fluide.",
+      "remarque": "Valeur nominale −7 °C. Le seuil du document (≤ −10 °C, risque de gel) est un seuil bas : la version 1 ne surveille que les échauffements."
+    },
+    {
+      "id": "Z3-PTR-01",
+      "nom": "La pompe de transfert",
+      "camera": "CAM-Z3",
+      "zone": 3,
+      "famille": "POM",
+      "activite": "brassage",
+      "plage_basse": 40,
+      "plage_haute": 60,
+      "temps_montee_min": 22,
+      "criticite": 1,
+      "action": null,
+      "remarque": "À vérifier : le document indique −7 °C, valeur de la jaquette glycol, peu probable pour un moteur de pompe. Valeurs précédentes conservées."
+    },
+    {
+      "id": "Z4-CHV-01",
+      "nom": "La chaudière vapeur",
+      "camera": "CAM-Z4",
+      "zone": 4,
+      "famille": "CHD",
+      "activite": "chaufferie",
+      "plage_basse": 150,
+      "plage_haute": 230,
+      "temps_montee_min": 45,
+      "criticite": 3,
+      "action": "Contrôler le brûleur, la régulation et l'évacuation des fumées.",
+      "seuil_inspection": 240,
+      "seuil_urgence": 245,
+      "remarque": "Plage de 100 à 540 °C selon la pression ; seuils fixés à 10 et 15 °C au-dessus de la valeur nominale, comme l'indique le document."
+    },
+    {
+      "id": "Z4-ARM-01-A",
+      "nom": "La phase A de l'armoire",
+      "camera": "CAM-Z4",
+      "zone": 4,
+      "famille": "ARM",
+      "activite": "chaufferie",
+      "plage_basse": 15,
+      "plage_haute": 35,
+      "temps_montee_min": 15,
+      "criticite": 3,
+      "action": null,
+      "seuil_inspection": 50,
+      "seuil_urgence": 65,
+      "remarque": "À vérifier : une armoire ne peut pas être plus froide que l'air de la chaufferie (31 à 40 °C) ; plage probablement relevée dans un local plus frais."
+    },
+    {
+      "id": "Z4-ARM-01-B",
+      "nom": "La phase B de l'armoire",
+      "camera": "CAM-Z4",
+      "zone": 4,
+      "famille": "ARM",
+      "activite": "chaufferie",
+      "plage_basse": 15,
+      "plage_haute": 35,
+      "temps_montee_min": 15,
+      "criticite": 3,
+      "action": null,
+      "seuil_inspection": 50,
+      "seuil_urgence": 65
+    },
+    {
+      "id": "Z4-ARM-01-C",
+      "nom": "La phase C de l'armoire",
+      "camera": "CAM-Z4",
+      "zone": 4,
+      "famille": "ARM",
+      "activite": "chaufferie",
+      "plage_basse": 15,
+      "plage_haute": 35,
+      "temps_montee_min": 15,
+      "criticite": 3,
+      "action": null,
+      "seuil_inspection": 50,
+      "seuil_urgence": 65
+    },
+    {
+      "id": "Z5-ETQ-01",
+      "nom": "L'étiqueteuse",
+      "camera": "CAM-Z5",
+      "zone": 5,
+      "famille": "MOT",
+      "activite": "conditionnement",
+      "plage_basse": 40,
+      "plage_haute": 45,
+      "temps_montee_min": 25,
+      "criticite": 1,
+      "action": null
+    },
+    {
+      "id": "Z5-PAS-01",
+      "nom": "Le pasteurisateur",
+      "camera": "CAM-Z5",
+      "zone": 5,
+      "famille": "CHD",
+      "activite": "conditionnement",
+      "plage_basse": 60,
+      "plage_haute": 67,
+      "temps_montee_min": 50,
+      "criticite": 2,
+      "action": null
+    },
+    {
+      "id": "Z5-CNV-01",
+      "nom": "Le convoyeur",
+      "camera": "CAM-Z5",
+      "zone": 5,
+      "famille": "MOT",
+      "activite": "conditionnement",
+      "plage_basse": 40,
+      "plage_haute": 45,
+      "temps_montee_min": 25,
+      "criticite": 1,
+      "action": null
+    },
+    {
+      "id": "Z6-CUV-01",
+      "nom": "La cuve de nettoyage",
+      "camera": "CAM-Z6",
+      "zone": 6,
+      "famille": "CHD",
+      "activite": "nettoyage",
+      "plage_basse": 70,
+      "plage_haute": 85,
+      "temps_montee_min": 25,
+      "criticite": 2,
+      "action": null,
+      "remarque": "Aucune valeur dans le document : valeurs précédentes conservées."
+    },
+    {
+      "id": "Z6-RES-01",
+      "nom": "La résistance de chauffe",
+      "camera": "CAM-Z6",
+      "zone": 6,
+      "famille": "RES",
+      "activite": "nettoyage",
+      "plage_basse": 50,
+      "plage_haute": 150,
+      "temps_montee_min": 15,
+      "criticite": 3,
+      "action": "Vérifier immédiatement le niveau de liquide dans la cuve et couper la chauffe si la cuve est vide.",
+      "seuil_inspection": 165,
+      "seuil_urgence": 180,
+      "remarque": "Seuils à 10 et 20 % au-dessus de la valeur nominale, comme l'indique le document."
+    },
+    {
+      "id": "Z6-PCI-01",
+      "nom": "La pompe de circulation",
+      "camera": "CAM-Z6",
+      "zone": 6,
+      "famille": "POM",
+      "activite": "nettoyage",
+      "plage_basse": 10,
+      "plage_haute": 90,
+      "temps_montee_min": 22,
+      "criticite": 2,
+      "action": null,
+      "seuil_inspection": 100,
+      "seuil_urgence": 115
+    },
+    {
+      "id": "Z7-CMP-01",
+      "nom": "Le compresseur",
+      "camera": "CAM-Z7",
+      "zone": 7,
+      "famille": "POM",
+      "activite": "continu",
+      "plage_basse": 30,
+      "plage_haute": 40,
+      "temps_montee_min": 30,
+      "criticite": 2,
+      "action": null,
+      "seuil_inspection": 95,
+      "seuil_urgence": 110
+    }
+  ],
+  "pannes_exemple": [
+    {
+      "id": "P-01",
+      "equipement": "Z6-CUV-01",
+      "type": "colmatage_filtre",
+      "jour": 0,
+      "heure": 15.5,
+      "duree_h": 6.3,
+      "intensite": 1.7
+    },
+    {
+      "id": "P-02",
+      "equipement": "Z4-ARM-01-C",
+      "type": "point_chaud_phase",
+      "jour": 1,
+      "heure": 15.6,
+      "duree_h": 12.5,
+      "intensite": 12.5
+    },
+    {
+      "id": "P-03",
+      "equipement": "Z3-PTR-01",
+      "type": "friction_roulement",
+      "jour": 2,
+      "heure": 9.6,
+      "duree_h": 4.1,
+      "intensite": 2.6
+    },
+    {
+      "id": "P-04",
+      "equipement": "Z5-ETQ-01",
+      "type": "derive_lente",
+      "jour": 2,
+      "heure": 18.4,
+      "duree_h": 5.5,
+      "intensite": 6.5
+    },
+    {
+      "id": "P-05",
+      "equipement": "Z6-RES-01",
+      "type": "chauffe_a_vide",
+      "jour": 3,
+      "heure": 3.6,
+      "duree_h": 0.3,
+      "intensite": 43.6
+    },
+    {
+      "id": "P-06",
+      "equipement": "Z5-ETQ-01",
+      "type": "derive_lente",
+      "jour": 3,
+      "heure": 5.5,
+      "duree_h": 4.1,
+      "intensite": 6.7
+    },
+    {
+      "id": "P-07",
+      "equipement": "Z5-CNV-01",
+      "type": "montee_brutale",
+      "jour": 3,
+      "heure": 10.1,
+      "duree_h": 0.5,
+      "intensite": 1.3
+    },
+    {
+      "id": "P-08",
+      "equipement": "Z2-CHE-01",
+      "type": "colmatage_filtre",
+      "jour": 3,
+      "heure": 15.8,
+      "duree_h": 5.7,
+      "intensite": 2.1
+    },
+    {
+      "id": "P-09",
+      "equipement": "Z3-GFG-01",
+      "type": "derive_froid",
+      "jour": 3,
+      "heure": 16.6,
+      "duree_h": 9.5,
+      "intensite": 1.7
+    },
+    {
+      "id": "P-10",
+      "equipement": "Z4-CHV-01",
+      "type": "defaut_refroidissement",
+      "jour": 3,
+      "heure": 21.0,
+      "duree_h": 7.8,
+      "intensite": 12.1
+    },
+    {
+      "id": "P-11",
+      "equipement": "Z1-ELV-01",
+      "type": "montee_brutale",
+      "jour": 4,
+      "heure": 8.5,
+      "duree_h": 0.4,
+      "intensite": 1.7
+    },
+    {
+      "id": "P-12",
+      "equipement": "Z4-CHV-01",
+      "type": "surchauffe_bruleur",
+      "jour": 4,
+      "heure": 10.1,
+      "duree_h": 1.4,
+      "intensite": 35.6
+    },
+    {
+      "id": "P-13",
+      "equipement": "Z5-CNV-01",
+      "type": "montee_brutale",
+      "jour": 6,
+      "heure": 6.7,
+      "duree_h": 0.5,
+      "intensite": 1.5
+    },
+    {
+      "id": "P-14",
+      "equipement": "Z5-PAS-01",
+      "type": "surchauffe_bruleur",
+      "jour": 6,
+      "heure": 13.1,
+      "duree_h": 1.9,
+      "intensite": 28.1
+    },
+    {
+      "id": "P-15",
+      "equipement": "Z3-GFG-01",
+      "type": "derive_froid",
+      "jour": 7,
+      "heure": 7.8,
+      "duree_h": 9.7,
+      "intensite": 1.7
+    },
+    {
+      "id": "P-16",
+      "equipement": "Z4-ARM-01-C",
+      "type": "point_chaud_phase",
+      "jour": 8,
+      "heure": 3.4,
+      "duree_h": 13.7,
+      "intensite": 15.4
+    },
+    {
+      "id": "P-17",
+      "equipement": "Z6-CUV-01",
+      "type": "colmatage_filtre",
+      "jour": 8,
+      "heure": 8.7,
+      "duree_h": 5.6,
+      "intensite": 1.4
+    },
+    {
+      "id": "P-18",
+      "equipement": "Z1-ELV-01",
+      "type": "friction_roulement",
+      "jour": 8,
+      "heure": 11.3,
+      "duree_h": 3.6,
+      "intensite": 2.2
+    },
+    {
+      "id": "P-19",
+      "equipement": "Z1-MOU-01",
+      "type": "derive_lente",
+      "jour": 8,
+      "heure": 17.1,
+      "duree_h": 5.9,
+      "intensite": 5.9
+    },
+    {
+      "id": "P-20",
+      "equipement": "Z5-ETQ-01",
+      "type": "montee_brutale",
+      "jour": 9,
+      "heure": 3.9,
+      "duree_h": 0.3,
+      "intensite": 1.4
+    },
+    {
+      "id": "P-21",
+      "equipement": "Z5-PAS-01",
+      "type": "surchauffe_bruleur",
+      "jour": 9,
+      "heure": 10.2,
+      "duree_h": 1.8,
+      "intensite": 28.2
+    },
+    {
+      "id": "P-22",
+      "equipement": "Z6-CUV-01",
+      "type": "surchauffe_bruleur",
+      "jour": 9,
+      "heure": 19.0,
+      "duree_h": 1.6,
+      "intensite": 27.0
+    },
+    {
+      "id": "P-23",
+      "equipement": "Z6-CUV-01",
+      "type": "rupture_calorifuge",
+      "jour": 10,
+      "heure": 3.1,
+      "duree_h": 4.6,
+      "intensite": 16.7
+    },
+    {
+      "id": "P-24",
+      "equipement": "Z4-CHV-01",
+      "type": "rupture_calorifuge",
+      "jour": 11,
+      "heure": 8.9,
+      "duree_h": 8.5,
+      "intensite": 22.7
+    },
+    {
+      "id": "P-25",
+      "equipement": "Z6-CUV-01",
+      "type": "colmatage_filtre",
+      "jour": 11,
+      "heure": 12.8,
+      "duree_h": 6.9,
+      "intensite": 1.4
+    },
+    {
+      "id": "P-26",
+      "equipement": "Z1-ELV-01",
+      "type": "derive_lente",
+      "jour": 11,
+      "heure": 17.7,
+      "duree_h": 4.5,
+      "intensite": 5.6
+    },
+    {
+      "id": "P-27",
+      "equipement": "Z4-ARM-01-C",
+      "type": "point_chaud_phase",
+      "jour": 12,
+      "heure": 10.9,
+      "duree_h": 11.5,
+      "intensite": 12.8
+    },
+    {
+      "id": "P-28",
+      "equipement": "Z4-ARM-01-B",
+      "type": "point_chaud_phase",
+      "jour": 13,
+      "heure": 11.3,
+      "duree_h": 12.0,
+      "intensite": 14.4
+    },
+    {
+      "id": "P-29",
+      "equipement": "Z3-GFG-01",
+      "type": "derive_froid",
+      "jour": 13,
+      "heure": 18.3,
+      "duree_h": 8.1,
+      "intensite": 1.3
+    },
+    {
+      "id": "P-30",
+      "equipement": "Z4-ARM-01-A",
+      "type": "point_chaud_phase",
+      "jour": 13,
+      "heure": 20.2,
+      "duree_h": 11.2,
+      "intensite": 15.0
+    },
+    {
+      "id": "P-31",
+      "equipement": "Z6-CUV-01",
+      "type": "defaut_refroidissement",
+      "jour": 13,
+      "heure": 22.0,
+      "duree_h": 6.1,
+      "intensite": 9.7
+    },
+    {
+      "id": "P-32",
+      "equipement": "Z5-PAS-01",
+      "type": "rupture_calorifuge",
+      "jour": 14,
+      "heure": 2.6,
+      "duree_h": 4.1,
+      "intensite": 14.2
+    },
+    {
+      "id": "P-33",
+      "equipement": "Z7-CMP-01",
+      "type": "derive_lente",
+      "jour": 14,
+      "heure": 12.4,
+      "duree_h": 4.6,
+      "intensite": 6.0
+    },
+    {
+      "id": "P-34",
+      "equipement": "Z1-VIS-01",
+      "type": "montee_brutale",
+      "jour": 15,
+      "heure": 2.8,
+      "duree_h": 0.4,
+      "intensite": 1.7
+    },
+    {
+      "id": "P-35",
+      "equipement": "Z6-PCI-01",
+      "type": "defaut_refroidissement",
+      "jour": 15,
+      "heure": 7.2,
+      "duree_h": 7.6,
+      "intensite": 34.1
+    },
+    {
+      "id": "P-36",
+      "equipement": "Z1-MOU-01",
+      "type": "derive_lente",
+      "jour": 15,
+      "heure": 14.9,
+      "duree_h": 5.0,
+      "intensite": 5.1
+    },
+    {
+      "id": "P-37",
+      "equipement": "Z1-VIS-01",
+      "type": "friction_roulement",
+      "jour": 16,
+      "heure": 11.6,
+      "duree_h": 4.3,
+      "intensite": 2.8
+    },
+    {
+      "id": "P-38",
+      "equipement": "Z4-ARM-01-B",
+      "type": "point_chaud_phase",
+      "jour": 16,
+      "heure": 17.4,
+      "duree_h": 13.7,
+      "intensite": 15.2
+    },
+    {
+      "id": "P-39",
+      "equipement": "Z6-PCI-01",
+      "type": "derive_lente",
+      "jour": 17,
+      "heure": 3.5,
+      "duree_h": 5.9,
+      "intensite": 20.0
+    },
+    {
+      "id": "P-40",
+      "equipement": "Z7-CMP-01",
+      "type": "defaut_refroidissement",
+      "jour": 17,
+      "heure": 17.1,
+      "duree_h": 6.0,
+      "intensite": 9.9
+    },
+    {
+      "id": "P-41",
+      "equipement": "Z6-RES-01",
+      "type": "chauffe_a_vide",
+      "jour": 17,
+      "heure": 17.3,
+      "duree_h": 0.5,
+      "intensite": 37.4
+    },
+    {
+      "id": "P-42",
+      "equipement": "Z4-CHV-01",
+      "type": "surchauffe_bruleur",
+      "jour": 17,
+      "heure": 20.7,
+      "duree_h": 1.3,
+      "intensite": 35.9
+    },
+    {
+      "id": "P-43",
+      "equipement": "Z2-CHE-01",
+      "type": "rupture_calorifuge",
+      "jour": 18,
+      "heure": 4.8,
+      "duree_h": 3.1,
+      "intensite": 27.7
+    },
+    {
+      "id": "P-44",
+      "equipement": "Z5-CNV-01",
+      "type": "friction_roulement",
+      "jour": 18,
+      "heure": 14.3,
+      "duree_h": 3.6,
+      "intensite": 2.6
+    },
+    {
+      "id": "P-45",
+      "equipement": "Z6-PCI-01",
+      "type": "friction_roulement",
+      "jour": 19,
+      "heure": 8.9,
+      "duree_h": 4.0,
+      "intensite": 8.1
+    },
+    {
+      "id": "P-46",
+      "equipement": "Z4-CHV-01",
+      "type": "defaut_refroidissement",
+      "jour": 20,
+      "heure": 10.2,
+      "duree_h": 6.5,
+      "intensite": 12.2
+    },
+    {
+      "id": "P-47",
+      "equipement": "Z3-PTR-01",
+      "type": "derive_lente",
+      "jour": 20,
+      "heure": 12.5,
+      "duree_h": 5.1,
+      "intensite": 6.7
+    },
+    {
+      "id": "P-48",
+      "equipement": "Z1-MOU-01",
+      "type": "montee_brutale",
+      "jour": 20,
+      "heure": 21.7,
+      "duree_h": 0.3,
+      "intensite": 1.6
+    },
+    {
+      "id": "P-49",
+      "equipement": "Z2-CHE-01",
+      "type": "colmatage_filtre",
+      "jour": 21,
+      "heure": 8.6,
+      "duree_h": 5.5,
+      "intensite": 1.7
+    },
+    {
+      "id": "P-50",
+      "equipement": "Z6-RES-01",
+      "type": "chauffe_a_vide",
+      "jour": 21,
+      "heure": 13.1,
+      "duree_h": 0.4,
+      "intensite": 36.4
+    },
+    {
+      "id": "P-51",
+      "equipement": "Z3-PTR-01",
+      "type": "derive_lente",
+      "jour": 22,
+      "heure": 13.7,
+      "duree_h": 4.1,
+      "intensite": 5.2
+    },
+    {
+      "id": "P-52",
+      "equipement": "Z6-RES-01",
+      "type": "chauffe_a_vide",
+      "jour": 23,
+      "heure": 7.0,
+      "duree_h": 0.3,
+      "intensite": 35.6
+    },
+    {
+      "id": "P-53",
+      "equipement": "Z1-VIS-01",
+      "type": "derive_lente",
+      "jour": 25,
+      "heure": 3.1,
+      "duree_h": 5.3,
+      "intensite": 6.0
+    },
+    {
+      "id": "P-54",
+      "equipement": "Z4-ARM-01-B",
+      "type": "point_chaud_phase",
+      "jour": 25,
+      "heure": 15.7,
+      "duree_h": 11.5,
+      "intensite": 14.5
+    },
+    {
+      "id": "P-55",
+      "equipement": "Z3-GFG-01",
+      "type": "derive_froid",
+      "jour": 25,
+      "heure": 16.6,
+      "duree_h": 8.4,
+      "intensite": 1.4
+    },
+    {
+      "id": "P-56",
+      "equipement": "Z4-ARM-01-A",
+      "type": "point_chaud_phase",
+      "jour": 25,
+      "heure": 18.8,
+      "duree_h": 12.4,
+      "intensite": 14.6
+    },
+    {
+      "id": "P-57",
+      "equipement": "Z4-ARM-01-A",
+      "type": "point_chaud_phase",
+      "jour": 27,
+      "heure": 19.2,
+      "duree_h": 12.5,
+      "intensite": 14.2
+    },
+    {
+      "id": "P-58",
+      "equipement": "Z7-CMP-01",
+      "type": "derive_lente",
+      "jour": 28,
+      "heure": 12.6,
+      "duree_h": 4.2,
+      "intensite": 6.4
+    },
+    {
+      "id": "P-59",
+      "equipement": "Z3-GFG-01",
+      "type": "derive_froid",
+      "jour": 29,
+      "heure": 3.5,
+      "duree_h": 10.0,
+      "intensite": 1.7
+    },
+    {
+      "id": "P-60",
+      "equipement": "Z6-RES-01",
+      "type": "chauffe_a_vide",
+      "jour": 29,
+      "heure": 12.9,
+      "duree_h": 0.3,
+      "intensite": 35.1
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+# Projet SASI — démarrage de tout le système
+#
+#     docker compose up -d
+#
+# Les mêmes conteneurs tournent sur l'ordinateur de développement et sur le
+# boîtier installé dans l'usine (cahier des charges technique, chapitre 10).
+
+services:
+
+  mosquitto:                      # serveur de messages
+    image: eclipse-mosquitto:2
+    ports: ["1883:1883"]
+    volumes:
+      - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_data:/mosquitto/data
+    restart: unless-stopped
+
+  base:                           # PostgreSQL + TimescaleDB
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_USER: sasi
+      POSTGRES_PASSWORD: ${MOT_DE_PASSE_BASE:-sasi}
+      POSTGRES_DB: sasi
+    ports: ["5432:5432"]
+    volumes:
+      - base_data:/var/lib/postgresql/data
+      - ./base/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    restart: unless-stopped
+
+  connecteur:                     # réception, contrôles, enregistrement
+    build: {context: ., dockerfile: config/Dockerfile.python}
+    command: python -m connecteur.main
+    environment: &env_python
+      SASI_SITE: ${SASI_SITE:-brasserie}
+      SASI_MQTT: mosquitto
+      SASI_BASE: postgresql://sasi:${MOT_DE_PASSE_BASE:-sasi}@base:5432/sasi
+    depends_on: [mosquitto, base]
+    volumes: [".:/app"]
+    restart: unless-stopped
+
+  ia:                             # température attendue, signaux, niveaux
+    build: {context: ., dockerfile: config/Dockerfile.python}
+    command: python -m ia.service
+    environment: *env_python
+    depends_on: [mosquitto, base]
+    volumes: [".:/app"]
+    restart: unless-stopped
+
+  alertes:                        # vie des alertes, escalade, SMS
+    build: {context: ., dockerfile: config/Dockerfile.python}
+    command: python -m alertes.service
+    environment: *env_python
+    depends_on: [mosquitto, base]
+    volumes: [".:/app"]
+    # sur site : accès au modem 4G pour les SMS
+    # devices: ["/dev/ttyUSB0:/dev/ttyUSB0"]
+    restart: unless-stopped
+
+  api:                            # serveur de l'application
+    build: {context: ., dockerfile: config/Dockerfile.python}
+    command: uvicorn api.serveur:app --host 0.0.0.0 --port 8000
+    environment: *env_python
+    ports: ["8000:8000"]
+    depends_on: [base, mosquitto]
+    volumes: [".:/app"]
+    restart: unless-stopped
+
+volumes:
+  mosquitto_data:
+  base_data:

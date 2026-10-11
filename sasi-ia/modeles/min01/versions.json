@@ -1,0 +1,71 @@
+{
+  "en_service": "v3",
+  "versions": [
+    {
+      "version": "v3",
+      "entraine_le": "2026-09-23T22:18:38",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM"
+      ],
+      "erreurs": {
+        "ARM": 0.2743196311672381,
+        "CHD": 0.41757723175090344,
+        "MOT": 0.2851670872409184,
+        "POM": 0.28934473592116583
+      },
+      "erreur_moyenne": 0.31660217152005643,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": true
+    },
+    {
+      "version": "v2",
+      "entraine_le": "2026-09-23T22:09:48",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM"
+      ],
+      "erreurs": {
+        "ARM": 0.2743196311672381,
+        "CHD": 0.41757723175090344,
+        "MOT": 0.2851670872409184,
+        "POM": 0.28934473592116583
+      },
+      "erreur_moyenne": 0.31660217152005643,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v1",
+      "entraine_le": "2026-09-23T20:01:12",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM"
+      ],
+      "erreurs": {
+        "ARM": 0.2850378395976832,
+        "CHD": 0.37343527884863875,
+        "MOT": 0.30695131204210224,
+        "POM": 0.42261292403945266
+      },
+      "erreur_moyenne": 0.3470093386319692,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    }
+  ]
+}

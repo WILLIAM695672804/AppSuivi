@@ -1,0 +1,29 @@
+{
+  "entrees": [
+    "Current",
+    "Voltage",
+    "Pressure",
+    "Volume Flow RateRMS",
+    "Current_moy_5min",
+    "Voltage_moy_5min",
+    "Pressure_moy_5min",
+    "Volume Flow RateRMS_moy_5min",
+    "heure",
+    "minute_du_jour"
+  ],
+  "calibrage": {
+    "biais": -0.6476096153845958,
+    "dispersion": 0.3686693142501941
+  },
+  "resultats": {
+    "erreur_moyenne": 0.8930628421900514,
+    "pannes": 34,
+    "pannes_detectees": 1,
+    "taux_detection": 0.029411764705882353,
+    "alertes": 1,
+    "fausses_alertes": 0,
+    "part_fausses_alertes": 0.0,
+    "delai_median_s": 0
+  },
+  "modele": "tranches"
+}

@@ -1,0 +1,169 @@
+/* Mise en page de l'application. Les couleurs, tailles et rayons viennent tous
+   du système visuel (systeme/tokens.css) : aucune valeur en dur ici. */
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--surface-100);
+  color: var(--ink);
+  font: 400 15px/22px var(--font-sans);
+}
+h1 { font: 500 32px/40px var(--font-sans); letter-spacing: -0.025em; margin: 0 0 var(--space-4); }
+h2 { font: 600 18px/24px var(--font-sans); margin: 0 0 var(--space-3); }
+h3 { font: 600 14px/20px var(--font-sans); color: var(--ink-muted); margin: 0 0 var(--space-2); }
+p { margin: 0 0 var(--space-2); }
+
+.application { display: grid; grid-template-columns: 264px 1fr; min-height: 100vh; }
+
+/* ---------------------------------------------------------------- menu */
+.menu {
+  background: var(--surface-200);
+  border-radius: var(--radius-xl);
+  margin: var(--space-4);
+  padding: var(--space-5) var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-5);
+  position: sticky; top: var(--space-4); height: calc(100vh - var(--space-4) * 2);
+}
+.menu-titre { display: flex; align-items: center; gap: var(--space-3);
+  font: 600 20px/24px var(--font-sans); }
+.menu-marque {
+  width: 36px; height: 36px; border-radius: var(--radius-md);
+  background: var(--accent); color: var(--on-accent);
+  display: grid; place-items: center; font-size: 18px;
+}
+.menu ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column;
+  gap: var(--space-1); }
+.menu-entree {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-2); padding: 0 var(--space-3); height: var(--control-md);
+  border: 0; border-radius: var(--radius-md); background: transparent;
+  color: var(--ink-muted); font: 500 15px/22px var(--font-sans); cursor: pointer;
+  text-align: left;
+}
+.menu-entree:hover { background: var(--surface-300); color: var(--ink); }
+.menu-entree.active { background: var(--accent-soft); color: var(--ink); }
+.menu-entree:focus-visible { outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: 2px; }
+.menu-compteur {
+  min-width: 26px; padding: 0 var(--space-2); border-radius: var(--radius-pill);
+  background: var(--accent); color: var(--on-accent);
+  font: 500 13px/20px var(--font-mono); text-align: center;
+}
+.menu-pied { margin-top: auto; color: var(--ink-subtle); font-size: 14px; }
+
+/* ---------------------------------------------------------------- barre */
+main { padding: var(--space-4) var(--space-6) var(--space-8) 0; }
+.barre {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-4); padding: 0 0 var(--space-4);
+}
+.barre-site { color: var(--ink-muted); font-size: 14px; }
+.barre-actions { display: flex; align-items: center; gap: var(--space-3); }
+.barre-utilisateur {
+  padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill);
+  background: var(--surface-200); font-size: 14px;
+}
+
+/* ---------------------------------------------------------------- écrans */
+.ecran { display: flex; flex-direction: column; gap: var(--space-4); }
+.titre-compte { color: var(--ink-muted); font: 400 15px/22px var(--font-sans);
+  margin-left: var(--space-3); }
+.panneau {
+  background: var(--surface-200); border-radius: var(--radius-lg);
+  padding: var(--space-5); box-shadow: var(--shadow-raised);
+}
+.panneau-courbe { padding-bottom: var(--space-4); }
+.deux-colonnes { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);
+  align-items: start; }
+.deux-colonnes > div { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.etat-site { padding: var(--space-2) 0 0; }
+.etat-titre { font: 500 48px/52px var(--font-sans); letter-spacing: -0.03em; margin: 0; }
+.etat-detail { color: var(--ink-muted); margin: var(--space-2) 0 0; }
+
+.compteurs { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+.compteurs-trois { grid-template-columns: repeat(3, 1fr); }
+
+.zone { margin-bottom: var(--space-4); }
+.zone-equipements { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.tuile {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-2) var(--space-3); border-radius: var(--radius-md);
+  border: 1px solid var(--border); background: var(--surface-200);
+  font: 400 14px/20px var(--font-sans); color: var(--ink); cursor: pointer;
+}
+.tuile:hover { background: var(--surface-300); }
+.tuile:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: 2px; }
+.tuile-id { color: var(--ink-subtle); font: 400 13px/20px var(--font-mono); }
+.tuile.niveau-surveillance { background: var(--niveau-surveillance-fond);
+  border-color: var(--niveau-surveillance-texte); }
+.tuile.niveau-inspection { background: var(--niveau-inspection-fond);
+  border-color: var(--niveau-inspection-texte); }
+.tuile.niveau-urgence { background: var(--niveau-urgence-fond);
+  border-color: var(--niveau-urgence-texte); font-weight: 600; }
+.tuile.niveau-information { background: var(--niveau-information-fond); }
+
+.filtres { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2);
+  margin-bottom: var(--space-3); }
+.filtres-libelle { font: 600 14px/20px var(--font-sans); color: var(--ink-muted);
+  margin-right: var(--space-1); }
+.filtres-fin { margin-left: auto; }
+
+.fil { border: 0; background: transparent; color: var(--ink-muted); cursor: pointer;
+  font: 400 14px/20px var(--font-sans); padding: 0; text-align: left; }
+.fil:hover { color: var(--ink); }
+.fiche-entete { display: flex; align-items: center; gap: var(--space-4); }
+.fiche-entete h1 { margin: 0; }
+.fiche-sous-titre { color: var(--ink-muted); font-size: 14px; margin: var(--space-1) 0 0; }
+
+.raison { font-size: 15px; }
+.facteurs { margin: 0 0 var(--space-4); padding-left: var(--space-5); color: var(--ink-muted); }
+.action-conseillee {
+  background: var(--niveau-normal-fond); border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+.action-conseillee h2 { margin-bottom: var(--space-1); }
+.boutons-colonne { display: flex; flex-direction: column; gap: var(--space-2); }
+.boutons-ligne { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
+
+.historique { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column;
+  gap: var(--space-2); }
+.historique li { display: flex; gap: var(--space-3); align-items: baseline; font-size: 14px; }
+.historique-heure { font: 400 14px/20px var(--font-mono); color: var(--ink-subtle);
+  min-width: 70px; }
+
+.proprietes { display: grid; grid-template-columns: auto 1fr; gap: var(--space-2) var(--space-4);
+  margin: 0; }
+.proprietes dt { color: var(--ink-muted); font-size: 14px; }
+.proprietes dd { margin: 0; text-align: right; font: 400 14px/20px var(--font-mono); }
+
+.liste-simple { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column;
+  gap: var(--space-2); }
+.liste-simple li { display: flex; gap: var(--space-3); font-size: 14px; }
+
+.cellule-forte { font: 600 14px/20px var(--font-mono); }
+.cellule-douce { color: var(--ink-muted); font-size: 14px; }
+.cellule-raison { max-width: 46ch; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; }
+.cellule-relance { color: var(--niveau-inspection-texte); font-size: 14px; }
+.etat-pastille { padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill);
+  background: var(--surface-300); font-size: 14px; }
+.ligne-urgence { background: var(--niveau-urgence-fond); }
+
+.image-thermique {
+  height: 360px; border-radius: var(--radius-md); border: 1px dashed var(--border-strong);
+  background: var(--surface-300); display: grid; place-content: center; text-align: center;
+  color: var(--ink-muted); gap: var(--space-2);
+}
+.note { color: var(--ink-subtle); font-size: 14px; }
+
+@media (max-width: 1500px) {
+  .compteurs { grid-template-columns: repeat(2, 1fr); }
+  .deux-colonnes { grid-template-columns: 1fr; }
+}
+
+.application-simple { display: block; padding: var(--space-6); }
+.en-attente {
+  display: grid; place-content: center; color: var(--ink-subtle);
+  background: var(--surface-300); border-radius: var(--radius-md);
+}

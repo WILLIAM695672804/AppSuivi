@@ -1,0 +1,153 @@
+{
+  "site": "MIN01",
+  "version": "v3",
+  "entraine_le": "2026-09-23T22:18:38",
+  "entrees": [
+    "charge_pct",
+    "etat_marche",
+    "t_ambiante",
+    "minutes_depuis_demarrage",
+    "minutes_depuis_arret",
+    "charge_moy_30min",
+    "heure",
+    "jour_semaine",
+    "plage_basse",
+    "plage_haute",
+    "fraction_chauffe",
+    "fraction_refroidissement"
+  ],
+  "familles": [
+    "ARM",
+    "CHD",
+    "MOT",
+    "POM"
+  ],
+  "erreurs": {
+    "ARM": 0.2743196311672381,
+    "CHD": 0.41757723175090344,
+    "MOT": 0.2851670872409184,
+    "POM": 0.28934473592116583
+  },
+  "calibrages": {
+    "Z1-ELV-01": {
+      "etabli": {
+        "biais": 0.005948347976470814,
+        "dispersion": 1.1676064535243391
+      },
+      "transitoire": {
+        "biais": -0.0035288926615280047,
+        "dispersion": 2.342675160599229
+      }
+    },
+    "Z1-NET-01": {
+      "etabli": {
+        "biais": -0.015128278296188569,
+        "dispersion": 1.4769341139831995
+      },
+      "transitoire": {
+        "biais": -0.12635945884386146,
+        "dispersion": 1.9740619063965104
+      }
+    },
+    "Z2-ASP-01": {
+      "etabli": {
+        "biais": -0.016561568358106626,
+        "dispersion": 1.2162888766481732
+      },
+      "transitoire": {
+        "biais": -0.08508814562146227,
+        "dispersion": 2.5710791857568394
+      }
+    },
+    "Z2-MOU-01": {
+      "etabli": {
+        "biais": 0.005791796932768989,
+        "dispersion": 1.2175064247989629
+      },
+      "transitoire": {
+        "biais": 0.08634309397244877,
+        "dispersion": 5.617457721588024
+      }
+    },
+    "Z2-PLA-01": {
+      "etabli": {
+        "biais": -0.0036732852211098788,
+        "dispersion": 1.0819884180178052
+      },
+      "transitoire": {
+        "biais": 0.0773444273870485,
+        "dispersion": 1.3505403527846405
+      }
+    },
+    "Z3-CNV-01": {
+      "etabli": {
+        "biais": 0.004039892005707202,
+        "dispersion": 1.1063712214263686
+      },
+      "transitoire": {
+        "biais": 0.110283375175392,
+        "dispersion": 2.6576068582955386
+      }
+    },
+    "Z3-ENS-01": {
+      "etabli": {
+        "biais": 0.00290843971839827,
+        "dispersion": 1.1599463719780945
+      },
+      "transitoire": {
+        "biais": -0.14787363968037504,
+        "dispersion": 2.7844100659410222
+      }
+    },
+    "Z4-ARM-01-A": {
+      "etabli": {
+        "biais": 0.0006680882402001487,
+        "dispersion": 1.1386662791359978
+      },
+      "transitoire": {
+        "biais": -0.05112288661953812,
+        "dispersion": 1.8771272856386052
+      }
+    },
+    "Z4-ARM-01-B": {
+      "etabli": {
+        "biais": -0.0015061211997178248,
+        "dispersion": 1.103582580251421
+      },
+      "transitoire": {
+        "biais": -0.05451113816042508,
+        "dispersion": 2.389941933030305
+      }
+    },
+    "Z4-ARM-01-C": {
+      "etabli": {
+        "biais": -0.004434666612748828,
+        "dispersion": 1.0786746323605163
+      },
+      "transitoire": {
+        "biais": -0.016233466312247202,
+        "dispersion": 2.3948741941785183
+      }
+    },
+    "Z4-CMP-01": {
+      "etabli": {
+        "biais": 0.0004197972481918555,
+        "dispersion": 1.2344267744459902
+      },
+      "transitoire": {
+        "biais": 0.0004197972481918555,
+        "dispersion": 1.2344267744459902
+      }
+    },
+    "Z4-SEC-01": {
+      "etabli": {
+        "biais": 0.04319089725945702,
+        "dispersion": 2.151384951979177
+      },
+      "transitoire": {
+        "biais": -0.002004292402233432,
+        "dispersion": 10.082620043163445
+      }
+    }
+  }
+}

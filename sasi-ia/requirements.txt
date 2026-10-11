@@ -1,0 +1,7 @@
+# Indispensable (environ 30 Mo) — suffit pour faire tourner toute la chaîne
+numpy>=1.26
+pandas>=2.2
+
+# Recommandé (environ 90 Mo de plus) — modèle LightGBM, plus précis.
+# Sans lui, le programme bascule automatiquement sur un modèle de repli.
+# lightgbm>=4.3

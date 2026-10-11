@@ -1,0 +1,486 @@
+{
+  "en_service": "v19",
+  "versions": [
+    {
+      "version": "v19",
+      "entraine_le": "2026-09-23T22:40:38",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.280375984559557,
+        "CHD": 0.41534711986611955,
+        "MOT": 0.27857843171529695,
+        "POM": 0.29109357911474254,
+        "RES": 0.4850269679719158
+      },
+      "erreur_moyenne": 0.35008441664552636,
+      "periode": "05/01/2026 au 03/02/2026",
+      "mesures": 734319,
+      "evaluation": {
+        "pannes": 60,
+        "pannes_detectees": 60,
+        "taux_detection": 1.0,
+        "fausses_alertes": 20,
+        "part_fausses_alertes": 0.20618556701030927,
+        "delai_median_s": 2430.0
+      },
+      "retours": 38,
+      "en_service": true
+    },
+    {
+      "version": "v18",
+      "entraine_le": "2026-09-23T22:04:32",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.280375984559557,
+        "CHD": 0.41534711986611955,
+        "MOT": 0.27647676627351525,
+        "POM": 0.29109357911474254,
+        "RES": 0.4850269679719158
+      },
+      "erreur_moyenne": 0.34966408355717,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v17",
+      "entraine_le": "2026-09-23T21:55:31",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.280375984559557,
+        "CHD": 0.41534711986611955,
+        "MOT": 0.27647676627351525,
+        "POM": 0.29109357911474254,
+        "RES": 0.4850269679719158
+      },
+      "erreur_moyenne": 0.34966408355717,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v16",
+      "entraine_le": "2026-09-23T21:44:02",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.280375984559557,
+        "CHD": 0.41534711986611955,
+        "MOT": 0.27647676627351525,
+        "POM": 0.29109357911474254,
+        "RES": 0.4850269679719158
+      },
+      "erreur_moyenne": 0.34966408355717,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v15",
+      "entraine_le": "2026-09-23T21:36:18",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.280375984559557,
+        "CHD": 0.41534711986611955,
+        "MOT": 0.27647676627351525,
+        "POM": 0.29109357911474254,
+        "RES": 0.4850269679719158
+      },
+      "erreur_moyenne": 0.34966408355717,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v14",
+      "entraine_le": "2026-09-23T20:17:58",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.2874393596698466,
+        "CHD": 0.4959873120527841,
+        "MOT": 0.28121398096701905,
+        "POM": 0.3294668975724258,
+        "RES": 0.3483800773865214
+      },
+      "erreur_moyenne": 0.3484975255297194,
+      "periode": "05/01/2026 au 18/01/2026",
+      "mesures": 342639,
+      "evaluation": {
+        "pannes": 24,
+        "pannes_detectees": 23,
+        "taux_detection": 0.9583333333333334,
+        "fausses_alertes": 14,
+        "part_fausses_alertes": 0.35,
+        "delai_median_s": 2610.0
+      },
+      "retours": 27,
+      "en_service": false
+    },
+    {
+      "version": "v13",
+      "entraine_le": "2026-09-23T19:53:08",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.2874393596698466,
+        "CHD": 0.4959873120527841,
+        "MOT": 0.2840124239237188,
+        "POM": 0.3294668975724258,
+        "RES": 0.3483800773865214
+      },
+      "erreur_moyenne": 0.34905721412105933,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v12",
+      "entraine_le": "2026-09-23T19:49:50",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.2874393596698466,
+        "CHD": 0.4959873120527841,
+        "MOT": 0.2840124239237188,
+        "POM": 0.3294668975724258,
+        "RES": 0.3483800773865214
+      },
+      "erreur_moyenne": 0.34905721412105933,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v11",
+      "entraine_le": "2026-09-23T19:46:07",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.2874393596698466,
+        "CHD": 0.4959873120527841,
+        "MOT": 0.2840124239237188,
+        "POM": 0.3294668975724258,
+        "RES": 0.3483800773865214
+      },
+      "erreur_moyenne": 0.34905721412105933,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v10",
+      "entraine_le": "2026-09-23T19:42:06",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.2874393596698466,
+        "CHD": 0.4959873120527841,
+        "MOT": 0.2840124239237188,
+        "POM": 0.3294668975724258,
+        "RES": 0.3483800773865214
+      },
+      "erreur_moyenne": 0.34905721412105933,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v9",
+      "entraine_le": "2026-09-23T16:23:45",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.2874393596698466,
+        "CHD": 0.4959873120527841,
+        "MOT": 0.2840124239237188,
+        "POM": 0.3294668975724258,
+        "RES": 0.3483800773865214
+      },
+      "erreur_moyenne": 0.34905721412105933,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v8",
+      "entraine_le": "2026-09-23T16:17:39",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.2874393596698466,
+        "CHD": 0.4959873120527841,
+        "MOT": 0.2840124239237188,
+        "POM": 0.3294668975724258,
+        "RES": 0.3483800773865214
+      },
+      "erreur_moyenne": 0.34905721412105933,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v7",
+      "entraine_le": "2026-09-23T16:13:36",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.2874393596698466,
+        "CHD": 0.4959873120527841,
+        "MOT": 0.2840124239237188,
+        "POM": 0.3294668975724258,
+        "RES": 0.3483800773865214
+      },
+      "erreur_moyenne": 0.34905721412105933,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v6",
+      "entraine_le": "2026-09-23T16:11:23",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.2874393596698466,
+        "CHD": 0.4959873120527841,
+        "MOT": 0.2840124239237188,
+        "POM": 0.3294668975724258,
+        "RES": 0.3483800773865214
+      },
+      "erreur_moyenne": 0.34905721412105933,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v5",
+      "entraine_le": "2026-09-23T16:09:23",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.2874393596698466,
+        "CHD": 0.4959873120527841,
+        "MOT": 0.2840124239237188,
+        "POM": 0.3294668975724258,
+        "RES": 0.3483800773865214
+      },
+      "erreur_moyenne": 0.34905721412105933,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v4",
+      "entraine_le": "2026-09-23T16:08:52",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.2874393596698466,
+        "CHD": 0.4959873120527841,
+        "MOT": 0.2840124239237188,
+        "POM": 0.3294668975724258,
+        "RES": 0.3483800773865214
+      },
+      "erreur_moyenne": 0.34905721412105933,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "retours": 0,
+      "en_service": false
+    },
+    {
+      "version": "v3",
+      "entraine_le": "2026-09-23T15:22:33",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.2874393596698466,
+        "CHD": 0.4959873120527841,
+        "MOT": 0.2840124239237188,
+        "POM": 0.3294668975724258,
+        "RES": 0.3483800773865214
+      },
+      "erreur_moyenne": 0.34905721412105933,
+      "periode": "05/01/2026 au 18/01/2026",
+      "mesures": 342720,
+      "evaluation": {
+        "pannes": 12,
+        "pannes_detectees": 12,
+        "taux_detection": 1.0,
+        "fausses_alertes": 7,
+        "part_fausses_alertes": 0.3684210526315789,
+        "delai_median_s": 2250.0
+      },
+      "en_service": false
+    },
+    {
+      "version": "v2",
+      "entraine_le": "2026-09-23T15:15:13",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.2874393596698466,
+        "CHD": 0.4959873120527841,
+        "MOT": 0.2840124239237188,
+        "POM": 0.3294668975724258,
+        "RES": 0.3483800773865214
+      },
+      "erreur_moyenne": 0.34905721412105933,
+      "periode": "05/01/2026 au 18/01/2026",
+      "mesures": 342720,
+      "evaluation": {
+        "pannes": 12,
+        "pannes_detectees": 12,
+        "taux_detection": 1.0,
+        "fausses_alertes": 7,
+        "part_fausses_alertes": 0.3684210526315789,
+        "delai_median_s": 2250.0
+      },
+      "en_service": false
+    },
+    {
+      "version": "v1",
+      "entraine_le": "2026-09-22T17:36:32",
+      "familles": [
+        "ARM",
+        "CHD",
+        "MOT",
+        "POM",
+        "RES"
+      ],
+      "erreurs": {
+        "ARM": 0.2874393596698466,
+        "CHD": 0.4959873120527841,
+        "MOT": 0.2840124239237188,
+        "POM": 0.3294668975724258,
+        "RES": 0.3483800773865214
+      },
+      "erreur_moyenne": 0.34905721412105933,
+      "periode": null,
+      "mesures": null,
+      "evaluation": null,
+      "en_service": false
+    }
+  ]
+}

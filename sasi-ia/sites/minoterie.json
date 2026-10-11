@@ -1,0 +1,557 @@
+{
+  "site": {
+    "id": "MIN01",
+    "nom": "Site d'exemple — minoterie",
+    "secteur": "Agroalimentaire (minoterie)",
+    "ville": "Douala"
+  },
+  "zones": {
+    "1": "Réception et nettoyage du grain",
+    "2": "Mouture et tamisage",
+    "3": "Ensachage",
+    "4": "Utilités et armoires électriques"
+  },
+  "familles": {
+    "MOT": "Moteurs et convoyeurs",
+    "ARM": "Armoires électriques",
+    "CHD": "Équipements chauds",
+    "POM": "Pompes et compresseurs"
+  },
+  "planning": {
+    "reception": {
+      "jours": "lundi-samedi",
+      "debut": 6,
+      "fin": 14,
+      "charge": 80
+    },
+    "mouture": {
+      "jours": "lundi-samedi",
+      "debut": 6,
+      "fin": 22,
+      "charge": 90
+    },
+    "ensachage": {
+      "jours": "lundi-samedi",
+      "debut": 8,
+      "fin": 18,
+      "charge": 75
+    },
+    "utilites": {
+      "jours": "lundi-samedi",
+      "debut": 5,
+      "fin": 22,
+      "charge": 70
+    },
+    "continu": {
+      "jours": "tous",
+      "debut": 0,
+      "fin": 24,
+      "charge": 65
+    }
+  },
+  "climat": {
+    "base": 28.0,
+    "amplitude": 4.0,
+    "heure_maximum": 15,
+    "humidite": [
+      70,
+      90
+    ],
+    "zones_particulieres": {
+      "4": {
+        "decalage": 6.0
+      }
+    }
+  },
+  "groupes_jumeaux": [
+    [
+      "Z4-ARM-01-A",
+      "Z4-ARM-01-B",
+      "Z4-ARM-01-C"
+    ]
+  ],
+  "equipements": [
+    {
+      "id": "Z1-ELV-01",
+      "nom": "L'élévateur à godets",
+      "camera": "CAM-Z1",
+      "zone": 1,
+      "famille": "MOT",
+      "activite": "reception",
+      "plage_basse": 45,
+      "plage_haute": 65,
+      "temps_montee_min": 35,
+      "criticite": 2,
+      "action": null
+    },
+    {
+      "id": "Z1-NET-01",
+      "nom": "Le nettoyeur-séparateur",
+      "camera": "CAM-Z1",
+      "zone": 1,
+      "famille": "MOT",
+      "activite": "reception",
+      "plage_basse": 40,
+      "plage_haute": 60,
+      "temps_montee_min": 30,
+      "criticite": 2,
+      "action": null
+    },
+    {
+      "id": "Z2-MOU-01",
+      "nom": "Le moulin à cylindres",
+      "camera": "CAM-Z2",
+      "zone": 2,
+      "famille": "MOT",
+      "activite": "mouture",
+      "plage_basse": 55,
+      "plage_haute": 80,
+      "temps_montee_min": 25,
+      "criticite": 3,
+      "action": "Contrôler les roulements des cylindres et l'absence d'accumulation de farine."
+    },
+    {
+      "id": "Z2-PLA-01",
+      "nom": "Le plansichter",
+      "camera": "CAM-Z2",
+      "zone": 2,
+      "famille": "MOT",
+      "activite": "mouture",
+      "plage_basse": 40,
+      "plage_haute": 58,
+      "temps_montee_min": 30,
+      "criticite": 2,
+      "action": null
+    },
+    {
+      "id": "Z2-ASP-01",
+      "nom": "Le ventilateur d'aspiration",
+      "camera": "CAM-Z2",
+      "zone": 2,
+      "famille": "MOT",
+      "activite": "mouture",
+      "plage_basse": 45,
+      "plage_haute": 70,
+      "temps_montee_min": 25,
+      "criticite": 3,
+      "action": "Vérifier l'encrassement des filtres et l'équilibrage du ventilateur."
+    },
+    {
+      "id": "Z3-ENS-01",
+      "nom": "L'ensacheuse",
+      "camera": "CAM-Z3",
+      "zone": 3,
+      "famille": "MOT",
+      "activite": "ensachage",
+      "plage_basse": 35,
+      "plage_haute": 50,
+      "temps_montee_min": 20,
+      "criticite": 1,
+      "action": null
+    },
+    {
+      "id": "Z3-CNV-01",
+      "nom": "Le convoyeur d'ensachage",
+      "camera": "CAM-Z3",
+      "zone": 3,
+      "famille": "MOT",
+      "activite": "ensachage",
+      "plage_basse": 40,
+      "plage_haute": 60,
+      "temps_montee_min": 25,
+      "criticite": 1,
+      "action": null
+    },
+    {
+      "id": "Z4-ARM-01-A",
+      "nom": "La phase A de l'armoire",
+      "camera": "CAM-Z4",
+      "zone": 4,
+      "famille": "ARM",
+      "activite": "utilites",
+      "plage_basse": 30,
+      "plage_haute": 50,
+      "temps_montee_min": 15,
+      "criticite": 3,
+      "action": null
+    },
+    {
+      "id": "Z4-ARM-01-B",
+      "nom": "La phase B de l'armoire",
+      "camera": "CAM-Z4",
+      "zone": 4,
+      "famille": "ARM",
+      "activite": "utilites",
+      "plage_basse": 30,
+      "plage_haute": 50,
+      "temps_montee_min": 15,
+      "criticite": 3,
+      "action": null
+    },
+    {
+      "id": "Z4-ARM-01-C",
+      "nom": "La phase C de l'armoire",
+      "camera": "CAM-Z4",
+      "zone": 4,
+      "famille": "ARM",
+      "activite": "utilites",
+      "plage_basse": 30,
+      "plage_haute": 50,
+      "temps_montee_min": 15,
+      "criticite": 3,
+      "action": null
+    },
+    {
+      "id": "Z4-CMP-01",
+      "nom": "Le compresseur d'air",
+      "camera": "CAM-Z4",
+      "zone": 4,
+      "famille": "POM",
+      "activite": "continu",
+      "plage_basse": 50,
+      "plage_haute": 80,
+      "temps_montee_min": 30,
+      "criticite": 2,
+      "action": null
+    },
+    {
+      "id": "Z4-SEC-01",
+      "nom": "Le séchoir à grain",
+      "camera": "CAM-Z4",
+      "zone": 4,
+      "famille": "CHD",
+      "activite": "utilites",
+      "plage_basse": 90,
+      "plage_haute": 140,
+      "temps_montee_min": 40,
+      "criticite": 3,
+      "action": "Contrôler le brûleur, la régulation et l'évacuation des poussières."
+    }
+  ],
+  "pannes_exemple": [
+    {
+      "id": "P-01",
+      "equipement": "Z4-ARM-01-B",
+      "type": "point_chaud_phase",
+      "jour": 0,
+      "heure": 15.6,
+      "duree_h": 12.5,
+      "intensite": 12.5
+    },
+    {
+      "id": "P-02",
+      "equipement": "Z3-ENS-01",
+      "type": "derive_lente",
+      "jour": 1,
+      "heure": 2.6,
+      "duree_h": 5.6,
+      "intensite": 5.3
+    },
+    {
+      "id": "P-03",
+      "equipement": "Z4-SEC-01",
+      "type": "surchauffe_bruleur",
+      "jour": 1,
+      "heure": 18.4,
+      "duree_h": 1.7,
+      "intensite": 26.9
+    },
+    {
+      "id": "P-04",
+      "equipement": "Z4-ARM-01-B",
+      "type": "point_chaud_phase",
+      "jour": 2,
+      "heure": 4.0,
+      "duree_h": 13.6,
+      "intensite": 13.3
+    },
+    {
+      "id": "P-05",
+      "equipement": "Z2-ASP-01",
+      "type": "derive_lente",
+      "jour": 3,
+      "heure": 3.9,
+      "duree_h": 4.2,
+      "intensite": 5.6
+    },
+    {
+      "id": "P-06",
+      "equipement": "Z3-CNV-01",
+      "type": "montee_brutale",
+      "jour": 3,
+      "heure": 19.8,
+      "duree_h": 0.4,
+      "intensite": 1.6
+    },
+    {
+      "id": "P-07",
+      "equipement": "Z4-ARM-01-B",
+      "type": "point_chaud_phase",
+      "jour": 4,
+      "heure": 3.3,
+      "duree_h": 12.2,
+      "intensite": 12.9
+    },
+    {
+      "id": "P-08",
+      "equipement": "Z4-CMP-01",
+      "type": "friction_roulement",
+      "jour": 4,
+      "heure": 4.8,
+      "duree_h": 4.2,
+      "intensite": 3.1
+    },
+    {
+      "id": "P-09",
+      "equipement": "Z3-ENS-01",
+      "type": "derive_lente",
+      "jour": 4,
+      "heure": 17.1,
+      "duree_h": 5.9,
+      "intensite": 5.9
+    },
+    {
+      "id": "P-10",
+      "equipement": "Z1-NET-01",
+      "type": "montee_brutale",
+      "jour": 4,
+      "heure": 17.2,
+      "duree_h": 0.5,
+      "intensite": 1.6
+    },
+    {
+      "id": "P-11",
+      "equipement": "Z4-ARM-01-A",
+      "type": "point_chaud_phase",
+      "jour": 4,
+      "heure": 17.4,
+      "duree_h": 13.7,
+      "intensite": 15.2
+    },
+    {
+      "id": "P-12",
+      "equipement": "Z3-CNV-01",
+      "type": "friction_roulement",
+      "jour": 5,
+      "heure": 11.3,
+      "duree_h": 3.6,
+      "intensite": 2.2
+    },
+    {
+      "id": "P-13",
+      "equipement": "Z1-ELV-01",
+      "type": "derive_lente",
+      "jour": 5,
+      "heure": 17.7,
+      "duree_h": 4.5,
+      "intensite": 5.6
+    },
+    {
+      "id": "P-14",
+      "equipement": "Z2-MOU-01",
+      "type": "montee_brutale",
+      "jour": 6,
+      "heure": 13.2,
+      "duree_h": 0.5,
+      "intensite": 1.5
+    },
+    {
+      "id": "P-15",
+      "equipement": "Z1-NET-01",
+      "type": "derive_lente",
+      "jour": 6,
+      "heure": 13.3,
+      "duree_h": 4.5,
+      "intensite": 6.5
+    },
+    {
+      "id": "P-16",
+      "equipement": "Z4-ARM-01-C",
+      "type": "point_chaud_phase",
+      "jour": 7,
+      "heure": 2.4,
+      "duree_h": 10.6,
+      "intensite": 15.1
+    },
+    {
+      "id": "P-17",
+      "equipement": "Z2-MOU-01",
+      "type": "derive_lente",
+      "jour": 7,
+      "heure": 3.4,
+      "duree_h": 4.5,
+      "intensite": 6.6
+    },
+    {
+      "id": "P-18",
+      "equipement": "Z4-ARM-01-A",
+      "type": "point_chaud_phase",
+      "jour": 7,
+      "heure": 14.7,
+      "duree_h": 12.9,
+      "intensite": 13.3
+    },
+    {
+      "id": "P-19",
+      "equipement": "Z1-NET-01",
+      "type": "derive_lente",
+      "jour": 7,
+      "heure": 14.9,
+      "duree_h": 5.0,
+      "intensite": 5.1
+    },
+    {
+      "id": "P-20",
+      "equipement": "Z1-ELV-01",
+      "type": "friction_roulement",
+      "jour": 8,
+      "heure": 2.6,
+      "duree_h": 3.4,
+      "intensite": 2.4
+    },
+    {
+      "id": "P-21",
+      "equipement": "Z3-CNV-01",
+      "type": "friction_roulement",
+      "jour": 8,
+      "heure": 9.6,
+      "duree_h": 4.4,
+      "intensite": 2.6
+    },
+    {
+      "id": "P-22",
+      "equipement": "Z2-PLA-01",
+      "type": "montee_brutale",
+      "jour": 8,
+      "heure": 12.6,
+      "duree_h": 0.3,
+      "intensite": 1.6
+    },
+    {
+      "id": "P-23",
+      "equipement": "Z4-ARM-01-A",
+      "type": "point_chaud_phase",
+      "jour": 8,
+      "heure": 19.5,
+      "duree_h": 13.1,
+      "intensite": 14.0
+    },
+    {
+      "id": "P-24",
+      "equipement": "Z4-SEC-01",
+      "type": "colmatage_filtre",
+      "jour": 9,
+      "heure": 10.6,
+      "duree_h": 6.2,
+      "intensite": 1.6
+    },
+    {
+      "id": "P-25",
+      "equipement": "Z4-CMP-01",
+      "type": "friction_roulement",
+      "jour": 9,
+      "heure": 14.3,
+      "duree_h": 3.6,
+      "intensite": 3.2
+    },
+    {
+      "id": "P-26",
+      "equipement": "Z2-ASP-01",
+      "type": "friction_roulement",
+      "jour": 9,
+      "heure": 15.5,
+      "duree_h": 4.3,
+      "intensite": 2.2
+    },
+    {
+      "id": "P-27",
+      "equipement": "Z3-ENS-01",
+      "type": "friction_roulement",
+      "jour": 9,
+      "heure": 16.7,
+      "duree_h": 4.4,
+      "intensite": 2.6
+    },
+    {
+      "id": "P-28",
+      "equipement": "Z2-MOU-01",
+      "type": "derive_lente",
+      "jour": 10,
+      "heure": 8.6,
+      "duree_h": 4.5,
+      "intensite": 5.2
+    },
+    {
+      "id": "P-29",
+      "equipement": "Z4-ARM-01-C",
+      "type": "point_chaud_phase",
+      "jour": 10,
+      "heure": 10.2,
+      "duree_h": 11.0,
+      "intensite": 14.2
+    },
+    {
+      "id": "P-30",
+      "equipement": "Z4-CMP-01",
+      "type": "derive_lente",
+      "jour": 10,
+      "heure": 18.6,
+      "duree_h": 5.9,
+      "intensite": 6.4
+    },
+    {
+      "id": "P-31",
+      "equipement": "Z1-ELV-01",
+      "type": "friction_roulement",
+      "jour": 11,
+      "heure": 12.2,
+      "duree_h": 3.3,
+      "intensite": 2.5
+    },
+    {
+      "id": "P-32",
+      "equipement": "Z2-ASP-01",
+      "type": "derive_lente",
+      "jour": 12,
+      "heure": 3.1,
+      "duree_h": 5.3,
+      "intensite": 6.0
+    },
+    {
+      "id": "P-33",
+      "equipement": "Z2-PLA-01",
+      "type": "montee_brutale",
+      "jour": 12,
+      "heure": 8.8,
+      "duree_h": 0.4,
+      "intensite": 1.7
+    },
+    {
+      "id": "P-34",
+      "equipement": "Z4-ARM-01-C",
+      "type": "point_chaud_phase",
+      "jour": 12,
+      "heure": 15.7,
+      "duree_h": 10.1,
+      "intensite": 15.1
+    },
+    {
+      "id": "P-35",
+      "equipement": "Z4-SEC-01",
+      "type": "rupture_calorifuge",
+      "jour": 13,
+      "heure": 11.6,
+      "duree_h": 8.6,
+      "intensite": 13.8
+    },
+    {
+      "id": "P-36",
+      "equipement": "Z2-PLA-01",
+      "type": "derive_lente",
+      "jour": 13,
+      "heure": 21.3,
+      "duree_h": 4.4,
+      "intensite": 6.3
+    }
+  ]
+}

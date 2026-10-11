@@ -1,0 +1,7 @@
+# Bibliothèques de l'application (cahier des charges technique, chapitre 3)
+paho-mqtt>=2.1          # messages MQTT
+psycopg[binary]>=3.2    # base PostgreSQL / TimescaleDB
+fastapi>=0.115          # serveur de l'application
+uvicorn[standard]>=0.32 # exécution du serveur
+pydantic>=2.9           # vérification des données reçues
+bcrypt>=4.2             # empreintes des mots de passe
