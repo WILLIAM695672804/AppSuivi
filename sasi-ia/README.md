@@ -406,6 +406,13 @@ sasi-ia/
 ├── api/
 │   ├── serveur.py        services de l'application (FastAPI, WebSocket)
 │   └── registre.py       copie de l'état, commandes vers le service des alertes
+├── integration/          kit remis à l'équipe du jumeau numérique
+│   ├── README.md         le contrat : sujets, messages, règles, vérifications
+│   ├── contrat.py        le même contrat, exécutable (Python seul)
+│   ├── verificateur.py   écoute un émetteur et dit ce qui cloche
+│   ├── emetteur_reference.py  publie un flux conforme, à comparer au sien
+│   ├── referentiel.py    liste de référence des équipements, source unique
+│   └── schemas/          les six messages en JSON Schema (autres langages)
 ├── ia/risque.py          probabilité d'atteindre le seuil dangereux, et son explication
 ├── ia/retours.py         corrections du terrain : fausses alertes, échauffements manqués
 ├── ia/travaux.py         entraînements lancés depuis l'application, en arrière-plan

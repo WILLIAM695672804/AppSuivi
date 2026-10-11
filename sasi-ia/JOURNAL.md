@@ -167,3 +167,30 @@ fonctionne. TimescaleDB reste la cible pour la production.
 
 **Leçon.** Un code qui n'a jamais tourné contre une vraie base ne fonctionne
 pas : il attend seulement de rencontrer ses erreurs.
+
+## 11/10/2026 — Le kit du jumeau, et deux promesses non tenues
+
+**Fait.** L'équipe du jumeau numérique dispose désormais de tout ce qu'il lui
+faut pour travailler sans nous : un contrat exécutable, un vérificateur qu'elle
+lance contre son propre jumeau, un émetteur de référence à comparer au sien, et
+les six messages en JSON Schema si elle travaille en C# ou en JavaScript.
+
+**Constaté en l'écrivant.** Le document *Conventions* annonçait deux sujets que
+personne n'écoutait : `jumeau/pannes` et `jumeau/horloge`. Le journal des pannes
+— la vérité de référence du contrôle automatique — ne pouvait venir que d'un
+fichier produit par notre propre simulateur. Autrement dit, nous savions
+contrôler l'IA sur nos données, pas sur les leurs.
+
+**Décidé.** Les deux messages sont reçus. Les deux publications du jumeau (un
+début, une fin) sont rapprochées en `donnees/<site>/journal_jumeau.csv`, au
+format que l'évaluation lit déjà. Le service `/api/referentiel` est devenu
+conforme au chapitre 6.6 : les noms n'ont plus qu'une source.
+
+**Décidé aussi.** Les tests comparent le contrat aux constantes réelles du
+connecteur, de la détection et du générateur de scénarios. Ajouter une signature
+de panne sans mettre le contrat à jour fait désormais échouer les tests.
+
+**Leçon.** Un contrat qui s'éloigne de l'implantation est pire qu'un contrat
+absent : il fait chercher la panne du mauvais côté. Les écarts assumés avec le
+document 1.0 sont consignés en fin de `integration/README.md` — dix-sept
+équipements et non quinze, `debut` en secondes, dix signatures de panne.
