@@ -61,8 +61,8 @@ jamais de note, elle serait perdue au prochain `lancer_site.py`.
 
 ```bash
 # 1. Tous les tests
-python3 tests/lancer_tests.py            # 135 tests, sans rien installer
-./venv/bin/python tests/lancer_tests.py  # 149 tests, entraînement compris
+python3 tests/lancer_tests.py            # 138 tests, sans rien installer
+./venv/bin/python tests/lancer_tests.py  # 152 tests, entraînement compris
 
 # 1 bis. Chaîne complète en un seul programme, sans serveur de messages ni base
 python3 outils/verifier_chaine.py        # 21 contrôles : connecteur → IA → alertes → écrans
@@ -221,6 +221,32 @@ La mise en service copie les fichiers de la version choisie et publie une demand
 de rechargement sur `sasi/<site>/modele` : le service IA reprend les modèles sans
 interruption, et les alertes en cours sont conservées. Revenir à la version
 précédente se fait de la même façon.
+
+## Conserver l'historique : la base de données
+
+Sans base, tout vit en mémoire et disparaît à l'arrêt des services. Avec elle,
+mesures, prédictions, alertes et comptes rendus sont conservés, et l'application
+les relit au démarrage.
+
+```bash
+# PostgreSQL seul : suffit pour développer, 80 Mo si l'image n'est pas déjà là
+docker compose --profile legere up -d base-legere
+export SASI_BASE="postgresql://sasi:sasi@localhost:5434/sasi"
+
+# verser la description du site : sans elle, aucune mesure ne peut entrer
+./venv/bin/python outils/initialiser_base.py
+./venv/bin/python outils/initialiser_base.py --verifier   # compter sans rien écrire
+
+# puis démarrer comme d'habitude : la base est détectée toute seule
+./outils/demonstration.sh
+```
+
+`TimescaleDB` (service `base`, 550 Mo) reste la cible pour la production : elle
+découpe les tables de mesures, les compresse après sept jours et les purge après
+un an. Le schéma s'adapte à ce qui est installé et le dit au démarrage.
+
+La base ne doit jamais empêcher d'alerter : si une écriture échoue, l'incident est
+noté dans le journal et la chaîne continue.
 
 ## Mettre le système en service (quand les outils seront installés)
 
@@ -407,6 +433,7 @@ sasi-ia/
 ├── outils/inspecter.py   justesse du raisonnement (erreurs, appuis, bon sens)
 ├── outils/essayer.py     banc d'essai : une situation, la réaction de l'IA pas à pas
 ├── outils/scenarios.py   compose le catalogue de pannes d'un site
+├── outils/initialiser_base.py  verse la description d'un site dans la base
 ├── outils/direct.py      jumeau numérique en direct (mesures en temps réel)
 ├── outils/demonstration.sh  remise à zéro, démarrage, flux en direct
 ├── lancer.py             contrôle sur les jeux publics

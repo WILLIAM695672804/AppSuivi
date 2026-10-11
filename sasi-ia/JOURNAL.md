@@ -140,3 +140,30 @@ simulateur signale désormais toute panne datée après la fin du lot.
 **Leçon à retenir.** Un jeu d'essai mal construit mesure ses propres défauts et
 non ceux du système. Avant de conclure qu'une IA rate une panne, il faut vérifier
 que la panne était détectable — et qu'elle a bien eu lieu.
+
+## 11/10/2026 — La persistance, et trois défauts qu'elle a révélés
+
+**Fait.** Le projet est en ligne (github.com/WILLIAM695672804/AppSuivi) et la
+base de données fonctionne. Mesures, prédictions, contexte, alertes, événements
+et comptes rendus sont conservés ; l'application les relit au démarrage.
+
+**Décidé en chemin.** L'image TimescaleDB (550 Mo) ne passait pas sur la
+connexion : le téléchargement a échoué deux fois. Le schéma accepte désormais
+PostgreSQL seul — sans compression ni purge automatique, mais tout le reste
+fonctionne. TimescaleDB reste la cible pour la production.
+
+**Trois défauts, tous invisibles sans base réelle.**
+
+1. Le dépôt ne savait pas convertir un horodatage en secondes, alors que le
+   moteur d'alertes ne produit que cela. Le service des alertes plantait à la
+   première alerte — silencieusement, puisque l'exception remontait dans la
+   bibliothèque MQTT.
+2. Cette erreur d'écriture interrompait le traitement de l'alerte. Prévenir une
+   équipe passe avant conserver un historique : les écritures sont maintenant
+   tentées sans jamais bloquer, et l'échec est noté.
+3. Après un redémarrage, la numérotation repartait à `A-0001` et **écrasait en
+   base l'alerte de la veille** portant ce numéro. Elle reprend désormais après
+   le dernier numéro enregistré.
+
+**Leçon.** Un code qui n'a jamais tourné contre une vraie base ne fonctionne
+pas : il attend seulement de rencontrer ses erreurs.
