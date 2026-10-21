@@ -170,10 +170,9 @@ class ServiceAlertes:
 
 
 def principal():
-    import paho.mqtt.client as mqtt
+    import messagerie
 
     site = Site.charger(os.environ.get("SASI_SITE", "brasserie"))
-    adresse = os.environ.get("SASI_MQTT", "localhost")
 
     depot = None
     if os.environ.get("SASI_BASE"):
@@ -190,7 +189,7 @@ def principal():
         except Exception as souci:
             print(f"Base : dernier numéro illisible ({souci}), reprise à A-0001")
 
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+    client = messagerie.client("sasi-alertes")
     service = ServiceAlertes(site, moteur=MoteurAlertes(premier_numero=premier),
                              depot=depot,
                              publier=lambda sujet, msg: client.publish(sujet, msg, qos=1),
@@ -200,7 +199,8 @@ def principal():
     def a_la_connexion(client, donnees, drapeaux, code, proprietes=None):
         client.subscribe(SUJET_NIVEAUX.format(site=site.identifiant), qos=1)
         client.subscribe(SUJET_COMMANDES.format(site=site.identifiant), qos=1)
-        print(f"Service des alertes prêt — site {site.identifiant}")
+        print(f"Service des alertes prêt — site {site.identifiant}, "
+              f"serveur {messagerie.resume()}")
 
     def a_la_reception(client, donnees, message):
         fiche = json.loads(message.payload)
@@ -211,7 +211,7 @@ def principal():
 
     client.on_connect = a_la_connexion
     client.on_message = a_la_reception
-    client.connect(adresse, 1883, keepalive=60)
+    messagerie.connecter(client)
 
     client.loop_start()
     try:

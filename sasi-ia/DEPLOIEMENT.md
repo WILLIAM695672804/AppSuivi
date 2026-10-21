@@ -1,0 +1,192 @@
+# Mise en service sur un serveur en ligne
+
+Pour un VPS neuf chez n'importe quel hébergeur. Les commandes sont à exécuter
+sur le serveur, en SSH. Le serveur de référence est un **Netcup VPS 500 ARM
+G12.5** — 2 cœurs ARM64, 4 Go de mémoire, 64 Go NVMe — dont la compatibilité a
+été vérifiée composant par composant.
+
+## Ce que l'on obtient
+
+Un système complet joignable en HTTPS : interface, serveur d'application, IA,
+moteur d'alertes, serveur de messages et base de données. Seuls les ports **80**
+et **443** sont ouverts ; ni la base ni le serveur de messages ne sont joignables
+depuis Internet.
+
+## Ce que l'on n'obtient pas
+
+| Manque | Pourquoi | Conséquence |
+|---|---|---|
+| Les **SMS** d'escalade | Le modem 4G est sur le site industriel, pas dans un centre de données | L'escalade s'arrête aux notifications de l'application |
+| Les **comptes réels** | Pas encore développés : le rôle se choisit dans une liste | Un mot de passe unique au niveau du proxy protège l'accès |
+| Les **vraies caméras** | Le jumeau numérique n'est pas prêt | Le jumeau provisoire produit les mesures (`--demo`) |
+
+Le mot de passe du proxy n'est pas un détail d'esthétique : l'application permet
+d'acquitter et de clôturer des alertes. Tant que l'authentification n'est pas
+faite, il est la seule chose qui sépare un visiteur de la console de surveillance.
+
+## Avant de commencer
+
+1. **Un nom de domaine qui désigne déjà le serveur.** Un enregistrement `A` vers
+   l'adresse IPv4 du VPS. À vérifier avant toute autre chose :
+
+   ```bash
+   dig +short sasi.votredomaine.site
+   ```
+
+   La réponse doit être exactement l'IPv4 du serveur. Caddy demande le certificat
+   à Let's Encrypt en prouvant qu'il contrôle le domaine ; si celui-ci ne résout
+   pas encore, la demande échoue — et les échecs sont limités par heure et par
+   domaine. Quinze minutes d'attente valent mieux qu'un refus.
+
+2. **Un accès SSH au serveur**, de préférence par clé.
+
+## 1. Préparer le système
+
+```bash
+# Mises à jour, puis les quelques outils nécessaires
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y git curl ca-certificates
+
+# Docker, par le script officiel : il choisit seul le paquet ARM64 ou x86-64
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker "$USER"      # puis se déconnecter et se reconnecter
+```
+
+**Mémoire d'échange** — 2 Go, par prudence. Le système consomme 1,2 Go en régime
+établi, mais un entraînement culmine à 1,5 Go : sur une machine à 4 Go, un pic
+simultané pourrait faire tuer un service par le noyau.
+
+```bash
+sudo fallocate -l 2G /echange && sudo chmod 600 /echange
+sudo mkswap /echange && sudo swapon /echange
+echo '/echange none swap sw 0 0' | sudo tee -a /etc/fstab
+```
+
+**Pare-feu** — on n'ouvre que le strict nécessaire.
+
+```bash
+sudo apt install -y ufw
+sudo ufw allow 22/tcp      # SSH : à autoriser AVANT d'activer, sans quoi
+sudo ufw allow 80/tcp      #       vous vous coupez l'accès à la machine
+sudo ufw allow 443/tcp
+sudo ufw --force enable
+```
+
+> En cas de coupure d'accès, Netcup offre une **console à distance** dans son
+> panneau : c'est le filet de sécurité. Repérez-la avant d'activer le pare-feu.
+
+## 2. Récupérer le projet et le régler
+
+```bash
+git clone https://github.com/WILLIAM695672804/AppSuivi.git
+cd AppSuivi/sasi-ia
+cp .env.exemple .env
+```
+
+Engendrer les secrets — **ne les choisissez pas à la main** :
+
+```bash
+openssl rand -base64 24                     # pour MOT_DE_PASSE_BASE
+openssl rand -base64 24                     # pour MQTT_MOT_DE_PASSE
+docker run --rm caddy:2-alpine caddy hash-password --plaintext 'votre-mot-de-passe'
+```
+
+Puis `nano .env` et remplir les six lignes. **L'empreinte bcrypt doit être entre
+guillemets simples** : elle contient des `$` que docker compose et bash
+prendraient sinon pour des variables, et le mot de passe serait refusé sans
+explication.
+
+## 3. Mettre en service
+
+```bash
+./outils/deployer.sh --demo
+```
+
+Le script contrôle les prérequis, refuse d'avancer si le domaine ne désigne pas
+cette machine, crée le compte du serveur de messages, bâtit les images, démarre
+les services, attend la base et y verse la description du site. Il est
+idempotent : on le relance sans dommage.
+
+**L'interface est bâtie sur le serveur**, pas sur votre poste : le VPS télécharge
+les dépendances Node à sa vitesse, et votre connexion n'envoie que du code
+source. Comptez quelques minutes la première fois.
+
+Sans `--demo`, aucune source de mesures n'est active et les écrans restent vides
+— c'est le mode qui conviendra quand le vrai jumeau publiera.
+
+## 4. Vérifier
+
+```bash
+./outils/deployer.sh --etat
+curl -u william:motdepasse https://sasi.votredomaine.site/api/etat
+```
+
+Puis ouvrir `https://sasi.votredomaine.site` dans un navigateur. Les niveaux et
+les alertes arrivent par WebSocket, donc instantanément ; les courbes se
+rafraîchissent toutes les 10 secondes, soit la cadence même des mesures.
+
+## 5. Sauvegarder
+
+Deux niveaux, complémentaires :
+
+**Les instantanés Netcup**, dans son panneau. Ils capturent la machine entière et
+permettent de revenir en arrière après une mauvaise manipulation. À prendre
+avant chaque opération risquée.
+
+**La base**, chaque nuit — un instantané de machine est trop grossier pour
+récupérer une seule table :
+
+```bash
+mkdir -p ~/sauvegardes
+cat > ~/sauvegarder.sh <<'FIN'
+#!/usr/bin/env bash
+set -eu
+cd ~/AppSuivi/sasi-ia
+jour=$(date +%F)
+docker compose -f docker-compose.production.yml exec -T base \
+    pg_dump -U sasi -d sasi --format=custom > ~/sauvegardes/sasi-$jour.dump
+find ~/sauvegardes -name 'sasi-*.dump' -mtime +14 -delete
+FIN
+chmod +x ~/sauvegarder.sh
+(crontab -l 2>/dev/null; echo "30 2 * * * $HOME/sauvegarder.sh") | crontab -
+```
+
+Une sauvegarde qui n'a jamais été restaurée n'est pas une sauvegarde : essayez
+la restauration une fois, sur une base jetable.
+
+## Mettre à jour
+
+```bash
+cd ~/AppSuivi && git pull && cd sasi-ia && ./outils/deployer.sh
+```
+
+Les données vivent dans des volumes : elles survivent à la reconstruction des
+images. Le script ne touche jamais à la base.
+
+## Si quelque chose ne va pas
+
+| Symptôme | Cause probable | Vérification |
+|---|---|---|
+| Pas de HTTPS, erreur de certificat | Le domaine ne résout pas, ou le port 80 est fermé | `dig +short <domaine>` et `sudo ufw status` |
+| Mot de passe refusé | Empreinte bcrypt tronquée par un `$` non protégé | Guillemets simples dans `.env` |
+| Écrans vides | Aucune source de mesures | `./outils/deployer.sh --demo` |
+| Un service redémarre en boucle | Mot de passe du serveur de messages désaccordé | `docker compose -f docker-compose.production.yml logs ia` |
+| Interface lente | Mémoire saturée pendant un entraînement | `free -h`, et vérifier l'échange |
+
+Journaux d'un service : `docker compose -f docker-compose.production.yml logs -f <service>`,
+où `<service>` vaut `caddy`, `api`, `ia`, `alertes`, `connecteur`, `base`,
+`mosquitto` ou `jumeau`.
+
+## Compatibilité ARM64, vérifiée
+
+| Composant | État |
+|---|---|
+| LightGBM 4.7.0 | roue `manylinux_2_17_aarch64` publiée |
+| psycopg-binary, pydantic-core | roues `aarch64` publiées |
+| TimescaleDB PG16 | image `arm64` publiée |
+| PostgreSQL 16 (repli) | image `arm64` publiée |
+| Mosquitto, Caddy, Python, Node | images officielles multi-architecture |
+
+Aucune compilation à prévoir. Si l'image TimescaleDB venait à manquer, le schéma
+fonctionne sur `postgres:16` seul — sans compression ni purge automatique, mais
+toutes les tables et toutes les écritures restent opérantes.

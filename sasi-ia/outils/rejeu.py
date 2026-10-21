@@ -26,6 +26,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+import messagerie   # noqa: E402  (après l'ajout du dossier racine)
+
 from ia.site import Site
 
 RACINE = Path(__file__).resolve().parents[1]
@@ -91,8 +93,8 @@ def rejouer(nom_site, lot, vitesse=60.0, adresse="localhost", limite=None, redat
     for ligne in ambiance:
         ambiance_par_temps[ligne["horodatage"]].append(ligne)
 
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-    client.connect(adresse, 1883, keepalive=60)
+    client = messagerie.client("sasi-rejeu")
+    messagerie.connecter(client, adresse)
     client.loop_start()
 
     groupes = grouper_par_horodatage(mesures)

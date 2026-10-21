@@ -1,0 +1,123 @@
+# Projet SASI — mise en service sur un serveur en ligne (VPS).
+#
+#     docker compose -f docker-compose.production.yml up -d --build
+#
+# Ce qui change par rapport à docker-compose.yml, destiné au développement :
+#   - aucun port n'est publié sauf 80 et 443 : ni la base, ni le serveur de
+#     messages ne sont joignables depuis Internet ;
+#   - le serveur de messages exige un compte ;
+#   - le code est inclus dans les images, non monté depuis le disque, pour que
+#     le conteneur qui tourne soit exactement celui qui a été bâti ;
+#   - l'interface compilée est bâtie sur le serveur et incluse dans l'image ;
+#   - ce qui est produit à l'exécution — modèles, retours, rapports — vit dans
+#     des volumes, et survit donc à une reconstruction.
+#
+# Les secrets viennent du fichier .env, qui n'est pas suivi par Git.
+
+name: sasi
+
+x-python: &python
+  build:
+    context: .
+    dockerfile: config/Dockerfile.python
+  environment: &environnement
+    SASI_SITE: ${SASI_SITE:-brasserie}
+    SASI_MQTT: mosquitto
+    SASI_MQTT_UTILISATEUR: ${MQTT_UTILISATEUR:?définissez MQTT_UTILISATEUR dans .env}
+    SASI_MQTT_MOT_DE_PASSE: ${MQTT_MOT_DE_PASSE:?définissez MQTT_MOT_DE_PASSE dans .env}
+    SASI_BASE: postgresql://sasi:${MOT_DE_PASSE_BASE:?définissez MOT_DE_PASSE_BASE dans .env}@base:5432/sasi
+  volumes: &volumes_travail
+    - modeles:/app/modeles
+    - retours:/app/retours
+    - resultats:/app/resultats
+    - donnees:/app/donnees
+  depends_on:
+    base: {condition: service_healthy}
+    mosquitto: {condition: service_started}
+  restart: unless-stopped
+
+services:
+
+  caddy:                          # chiffrement, mot de passe, acheminement
+    image: caddy:2-alpine
+    ports: ["80:80", "443:443"]
+    environment:
+      DOMAINE: ${DOMAINE:?définissez DOMAINE dans .env}
+      ACCES_UTILISATEUR: ${ACCES_UTILISATEUR:?définissez ACCES_UTILISATEUR dans .env}
+      ACCES_EMPREINTE: ${ACCES_EMPREINTE:?définissez ACCES_EMPREINTE dans .env}
+    volumes:
+      - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data            # certificats : à conserver, sinon Let's Encrypt
+      - caddy_config:/config        #   refuse de nouvelles demandes trop fréquentes
+      - caddy_journaux:/var/log/caddy
+    depends_on: [api]
+    restart: unless-stopped
+
+  mosquitto:                      # serveur de messages, compte obligatoire
+    image: eclipse-mosquitto:2
+    volumes:
+      - ./config/mosquitto.production.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_config:/mosquitto/config
+      - mosquitto_data:/mosquitto/data
+    restart: unless-stopped
+    # Aucun port publié : seuls les conteneurs de SASI l'atteignent.
+
+  base:                           # PostgreSQL + TimescaleDB
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_USER: sasi
+      POSTGRES_PASSWORD: ${MOT_DE_PASSE_BASE:?définissez MOT_DE_PASSE_BASE dans .env}
+      POSTGRES_DB: sasi
+    volumes:
+      - base_data:/var/lib/postgresql/data
+      - ./base/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sasi -d sasi"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+    # Aucun port publié : une base de données ne s'expose jamais sur Internet.
+
+  api:                            # serveur d'application et interface compilée
+    build:
+      context: .
+      dockerfile: config/Dockerfile.api
+    environment: *environnement
+    volumes: *volumes_travail
+    depends_on:
+      base: {condition: service_healthy}
+      mosquitto: {condition: service_started}
+    restart: unless-stopped
+    expose: ["8000"]
+
+  connecteur:                     # réception, contrôles, enregistrement
+    <<: *python
+    command: python -m connecteur.main
+
+  ia:                             # température attendue, signaux, niveaux
+    <<: *python
+    command: python -m ia.service
+
+  alertes:                        # vie des alertes, escalade, notifications
+    <<: *python
+    command: python -m alertes.service
+    # Les SMS demandent le modem 4G, qui est sur le site, non sur le serveur :
+    # en ligne, l'escalade s'arrête aux notifications de l'application.
+
+  jumeau:                         # mesures de démonstration, en attendant le vrai
+    <<: *python
+    command: python -u outils/direct.py ${SASI_SITE:-brasserie} --panne ${PERIODE_PANNE_S:-900}
+    profiles: ["demonstration"]
+
+volumes:
+  caddy_data:
+  caddy_config:
+  caddy_journaux:
+  mosquitto_config:
+  mosquitto_data:
+  base_data:
+  modeles:
+  retours:
+  resultats:
+  donnees:

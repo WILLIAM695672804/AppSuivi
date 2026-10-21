@@ -1,0 +1,27 @@
+# Image du serveur d'application : l'interface compilée y est incluse.
+#
+# L'interface est bâtie ici, sur le serveur, et non sur le poste de
+# développement : le VPS télécharge les dépendances à sa vitesse, pas à celle
+# d'une connexion camerounaise. Rien n'est à envoyer que le code source.
+
+FROM node:20-slim AS interface
+WORKDIR /interface
+COPY frontend/package.json frontend/package-lock.json* ./
+RUN npm install --no-audit --no-fund
+COPY frontend/ ./
+RUN npm run build
+
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt requirements-app.txt ./
+RUN pip install --no-cache-dir -r requirements.txt -r requirements-app.txt
+COPY . .
+COPY --from=interface /interface/dist ./frontend/dist
+# Compte sans privilèges : un service exposé sur Internet ne tourne pas en root.
+RUN useradd --create-home --uid 10001 sasi \
+    && mkdir -p modeles retours resultats donnees journaux \
+    && chown -R sasi:sasi /app
+USER sasi
+ENV PYTHONUNBUFFERED=1
+EXPOSE 8000
+CMD ["uvicorn", "api.serveur:app", "--host", "0.0.0.0", "--port", "8000"]

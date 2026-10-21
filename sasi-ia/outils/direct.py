@@ -38,6 +38,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+import messagerie   # noqa: E402  (après l'ajout du dossier racine)
+
 from ia.site import Site
 from outils import simulateur
 
@@ -109,8 +111,8 @@ def publier(site, adresse, pas_s, heures_par_minute, periode_panne_s, graine,
                    for e in liste}
     charges = {e["id"]: alea.uniform(60, 95) for e in liste}
 
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-    client.connect(adresse, 1883, keepalive=60)
+    client = messagerie.client("sasi-direct")
+    messagerie.connecter(client, adresse)
     client.loop_start()
 
     depart_reel = time.time()

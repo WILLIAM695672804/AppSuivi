@@ -1,0 +1,35 @@
+# Porte d'entrée du système : chiffrement, mot de passe, acheminement.
+#
+# Caddy obtient et renouvelle seul le certificat Let's Encrypt du domaine, à
+# condition que celui-ci pointe déjà vers la machine.
+
+{$DOMAINE} {
+	encode zstd gzip
+
+	# Garde provisoire. L'application n'a pas encore de comptes réels — le rôle
+	# se choisit dans une liste —, et elle permet d'acquitter et de clôturer des
+	# alertes. Tant que l'authentification n'est pas faite, ce mot de passe est
+	# la seule chose qui sépare un visiteur de la console de surveillance.
+	basic_auth {
+		{$ACCES_UTILISATEUR} {$ACCES_EMPREINTE}
+	}
+
+	# Le serveur d'application sert aussi l'interface compilée ; le suivi en
+	# temps réel passe par la même adresse et Caddy le relaie sans réglage.
+	reverse_proxy api:8000
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+
+	log {
+		output file /var/log/caddy/acces.log {
+			roll_size 10MiB
+			roll_keep 5
+		}
+	}
+}

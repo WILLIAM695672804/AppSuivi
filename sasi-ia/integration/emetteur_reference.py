@@ -243,9 +243,9 @@ def principal():
             compteur["messages"] += 1
         client = None
     else:
-        import paho.mqtt.client as mqtt
-        client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-        client.connect(arguments.mqtt, arguments.port, keepalive=60)
+        import messagerie
+        client = messagerie.client("sasi-emetteur")
+        messagerie.connecter(client, arguments.mqtt, arguments.port)
         client.loop_start()
 
         def publier(sujet, charge):

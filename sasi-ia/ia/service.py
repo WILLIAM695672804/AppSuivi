@@ -211,11 +211,10 @@ def _en_secondes(horodatage):
 
 # ---------------------------------------------------------------- exécution
 def principal():
-    import paho.mqtt.client as mqtt
+    import messagerie
     from ia.modeles_en_service import charger
 
     site = Site.charger(os.environ.get("SASI_SITE", "brasserie"))
-    adresse = os.environ.get("SASI_MQTT", "localhost")
     modeles, calibrages = charger(site)
 
     depot = None
@@ -223,7 +222,7 @@ def principal():
         from connecteur.depot import Depot
         depot = Depot(os.environ["SASI_BASE"])
 
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+    client = messagerie.client("sasi-ia")
     service = ServiceIA(site, modeles, calibrages, depot=depot,
                         publier=lambda sujet, message: client.publish(sujet, message, qos=1))
 
@@ -249,7 +248,7 @@ def principal():
 
     client.on_connect = a_la_connexion
     client.on_message = a_la_reception
-    client.connect(adresse, 1883, keepalive=60)
+    messagerie.connecter(client)
     client.loop_forever()
 
 

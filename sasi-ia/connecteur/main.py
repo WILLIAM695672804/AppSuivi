@@ -183,10 +183,9 @@ class Connecteur:
 
 # ---------------------------------------------------------------- exécution
 def principal():
-    import paho.mqtt.client as mqtt          # importé ici : inutile pour les tests
+    import messagerie                        # importé ici : inutile pour les tests
 
     site = Site.charger(os.environ.get("SASI_SITE", "brasserie"))
-    adresse = os.environ.get("SASI_MQTT", "localhost")
 
     depot = None
     if os.environ.get("SASI_BASE"):
@@ -197,14 +196,15 @@ def principal():
     journal = JournalPannes(
         RACINE / "donnees" / site.identifiant.lower() / "journal_jumeau.csv")
 
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+    client = messagerie.client("sasi-connecteur")
     connecteur = Connecteur(site, depot, journal=journal,
                             publier=lambda sujet, message: client.publish(sujet, message, qos=1))
 
     def a_la_connexion(client, donnees, drapeaux, code, proprietes=None):
         for sujet in (SUJET_MESURES, SUJET_CONTEXTE, SUJET_PANNES, SUJET_HORLOGE):
             client.subscribe(sujet.format(site=site.identifiant), qos=1)
-        print(f"Connecteur prêt — site {site.identifiant}, serveur {adresse}")
+        print(f"Connecteur prêt — site {site.identifiant}, "
+              f"serveur {messagerie.resume()}")
 
     def a_la_reception(client, donnees, message):
         if message.topic.endswith("/contexte"):
@@ -221,7 +221,7 @@ def principal():
 
     client.on_connect = a_la_connexion
     client.on_message = a_la_reception
-    client.connect(adresse, 1883, keepalive=60)
+    messagerie.connecter(client)
     client.loop_forever()
 
 

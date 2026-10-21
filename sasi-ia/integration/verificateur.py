@@ -216,9 +216,9 @@ def _en_secondes(horodatage):
 
 def ecouter(verificateur, adresse, duree, port=1883):
     """Écoute le serveur de messages pendant « duree » secondes."""
-    import paho.mqtt.client as mqtt
+    import messagerie
 
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+    client = messagerie.client("sasi-verificateur")
     sujet = f"sasi/{verificateur.site}/#"
 
     def a_la_connexion(client, donnees, drapeaux, code, proprietes=None):
@@ -230,7 +230,7 @@ def ecouter(verificateur, adresse, duree, port=1883):
 
     client.on_connect = a_la_connexion
     client.on_message = a_la_reception
-    client.connect(adresse, port, keepalive=60)
+    messagerie.connecter(client, adresse, port)
     client.loop_start()
     fin = time.time() + duree
     try:

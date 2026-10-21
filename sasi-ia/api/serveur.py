@@ -155,15 +155,15 @@ async def cycle_de_vie(app):
 
     if ADRESSE_MQTT:
         try:
-            import paho.mqtt.client as mqtt
-            CLIENT_MQTT = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+            import messagerie
+            CLIENT_MQTT = messagerie.client("sasi-api")
             CLIENT_MQTT.on_message = sur_message_mqtt
-            CLIENT_MQTT.connect(ADRESSE_MQTT, 1883, 60)
+            messagerie.connecter(CLIENT_MQTT)
             for sujet in (SUJET_NIVEAUX, SUJET_ALERTES, SUJET_TECHNIQUE, SUJET_JUGEMENTS):
                 CLIENT_MQTT.subscribe(sujet, qos=1)
             CLIENT_MQTT.loop_start()
             REGISTRE.connecte = True
-            print(f"Serveur de messages : {ADRESSE_MQTT}")
+            print(f"Serveur de messages : {messagerie.resume()}")
         except Exception as erreur:              # l'application reste consultable
             print(f"Serveur de messages injoignable : {erreur}")
 
