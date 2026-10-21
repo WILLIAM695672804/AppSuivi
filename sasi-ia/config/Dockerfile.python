@@ -1,6 +1,17 @@
+# Image des services : connecteur, IA, moteur d'alertes, jumeau de démonstration.
+
 FROM python:3.12-slim
 WORKDIR /app
 COPY requirements.txt requirements-app.txt ./
 RUN pip install --no-cache-dir -r requirements.txt -r requirements-app.txt
 COPY . .
+# Même compte, et surtout même identifiant numérique que dans Dockerfile.api :
+# ces services partagent les volumes modeles/ et retours/ avec le serveur
+# d'application. Deux comptes différents, et le fichier écrit par l'un ne serait
+# plus modifiable par l'autre — un retour du terrain serait silencieusement
+# perdu, et c'est le genre de panne qu'on ne découvre que des semaines plus tard.
+RUN useradd --create-home --uid 10001 sasi \
+    && mkdir -p modeles retours resultats donnees journaux \
+    && chown -R sasi:sasi /app
+USER sasi
 ENV PYTHONUNBUFFERED=1
