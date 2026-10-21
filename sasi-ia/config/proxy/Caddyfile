@@ -1,0 +1,25 @@
+# Frontal partagé. Ce fichier ne contient aucune application : il les importe.
+#
+# Pour ajouter une application, déposer un fichier dans sites/ :
+#
+#     sites/sasi.caddy          déjà présent
+#     sites/autre.caddy         votre seconde application
+#
+# puis recharger sans interrompre le service :
+#
+#     docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
+
+{
+	# Adresse de notification de Let's Encrypt : expiration, problème de
+	# renouvellement. À renseigner, c'est le seul moyen d'être averti.
+	email {$COURRIEL_ADMINISTRATEUR:admin@localhost}
+}
+
+import /etc/caddy/sites/*.caddy
+
+# Toute requête portant un nom de domaine inconnu tombe ici. Sans ce bloc, Caddy
+# tenterait d'obtenir un certificat pour n'importe quel nom pointé vers cette
+# machine par un tiers.
+:80, :443 {
+	respond "Hôte inconnu" 421
+}

@@ -4,6 +4,9 @@
 #     ./outils/deployer.sh              met en service, ou met à jour
 #     ./outils/deployer.sh --demo       y ajoute le jumeau de démonstration
 #     ./outils/deployer.sh --etat       montre l'état, sans rien changer
+#     ./outils/deployer.sh --frontal    recharge le seul frontal (après avoir
+#                                       ajouté une application dans
+#                                       config/proxy/sites/)
 #
 # À exécuter sur le serveur, depuis le dossier sasi-ia du dépôt. Le script est
 # idempotent : on peut le relancer autant de fois qu'on veut, il ne recrée pas
@@ -12,6 +15,8 @@
 set -euo pipefail
 
 COMPOSITION="docker-compose.production.yml"
+FRONTAL="config/proxy/docker-compose.yml"
+RESEAU="frontal"
 OBLIGATOIRES=(DOMAINE ACCES_UTILISATEUR ACCES_EMPREINTE MOT_DE_PASSE_BASE
               MQTT_UTILISATEUR MQTT_MOT_DE_PASSE)
 
@@ -22,6 +27,7 @@ vert()  { printf '\033[32m%s\033[0m\n' "$*"; }
 titre() { printf '\n\033[1m%s\033[0m\n' "$*"; }
 
 composer() { docker compose -f "$COMPOSITION" "$@"; }
+frontal()  { docker compose -f "$FRONTAL" --env-file .env "$@"; }
 
 # ------------------------------------------------------------------ contrôles
 verifier_prealables() {
@@ -70,6 +76,31 @@ verifier_prealables() {
     else
         vert "  $DOMAINE → $resolue, c'est bien cette machine"
     fi
+}
+
+# ------------------------------------------------------------------ frontal
+preparer_le_reseau() {
+    titre "Réseau partagé"
+    # Deux applications ne peuvent pas occuper les ports 80 et 443 à la fois :
+    # un frontal unique les détient et achemine selon le nom de domaine. Les
+    # applications le rejoignent sur ce réseau, sans publier aucun port.
+    if docker network inspect "$RESEAU" >/dev/null 2>&1; then
+        vert "  réseau « $RESEAU » déjà présent"
+    else
+        docker network create "$RESEAU" >/dev/null
+        vert "  réseau « $RESEAU » créé"
+    fi
+}
+
+demarrer_le_frontal() {
+    titre "Frontal partagé"
+    frontal up -d
+    vert "  Caddy écoute sur 80 et 443"
+    echo "  Applications desservies :"
+    for fichier in config/proxy/sites/*.caddy; do
+        [ -e "$fichier" ] || continue
+        echo "    $(basename "$fichier" .caddy)"
+    done
 }
 
 # ------------------------------------- compte du serveur de messages
@@ -122,6 +153,8 @@ verser_le_referentiel() {
 etat() {
     titre "État des services"
     composer ps
+    titre "État du frontal"
+    frontal ps
     titre "Certificat et accès"
     local domaine="${DOMAINE:-}"
     if [ -n "$domaine" ]; then
@@ -141,14 +174,24 @@ for argument in "$@"; do
     case "$argument" in
         --demo|--demonstration) AVEC_DEMONSTRATION=1;;
         --etat|--status) set -a; . ./.env; set +a; etat; exit 0;;
-        -h|--help) sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
+        --frontal)
+            set -a; . ./.env; set +a
+            titre "Rechargement du frontal"
+            frontal up -d
+            # reload relit la configuration sans couper les connexions en cours
+            frontal exec -T caddy caddy reload --config /etc/caddy/Caddyfile \
+                && vert "  configuration rechargée, sans interruption"
+            exit 0;;
+        -h|--help) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
         *) rouge "Argument inconnu : $argument"; exit 1;;
     esac
 done
 
 verifier_prealables
+preparer_le_reseau
 creer_compte_mqtt
 construire_et_demarrer
+demarrer_le_frontal
 verser_le_referentiel
 etat
 

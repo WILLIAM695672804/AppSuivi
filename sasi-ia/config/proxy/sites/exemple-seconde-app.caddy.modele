@@ -1,0 +1,27 @@
+# Modèle pour la seconde application. À copier en « <nom>.caddy », à remplir,
+# puis à recharger : docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
+#
+# Côté application, deux conditions seulement :
+#   - ne publier aucun port (pas de « ports: » dans sa composition) ;
+#   - rejoindre le réseau « frontal », avec un alias stable :
+#
+#       networks:
+#         frontal:
+#           aliases: [autre-app]
+#       …
+#       networks:
+#         frontal:
+#           name: frontal
+#           external: true
+
+autre.the7ing.site {
+	encode zstd gzip
+	reverse_proxy autre-app:8000
+	header -Server
+	log {
+		output file /var/log/caddy/autre.log {
+			roll_size 10MiB
+			roll_keep 5
+		}
+	}
+}

@@ -12,6 +12,20 @@ moteur d'alertes, serveur de messages et base de données. Seuls les ports **80*
 et **443** sont ouverts ; ni la base ni le serveur de messages ne sont joignables
 depuis Internet.
 
+Le serveur peut héberger **plusieurs applications**. Deux ne pouvant pas occuper
+les ports 80 et 443 en même temps, un **frontal partagé** les détient et
+achemine chaque requête selon le nom de domaine demandé :
+
+```
+                            ┌─ sasi.the7ing.site  ──► SASI      (sasi-api:8000)
+Internet ──► Caddy (80/443) ┤
+     frontal partagé        └─ autre.the7ing.site ──► seconde application
+```
+
+SASI ne publie donc aucun port : elle rejoint le réseau `frontal` sous le nom
+`sasi-api` et se laisse appeler. Le frontal vit à part des applications,
+volontairement — redémarrer SASI n'interrompt pas l'autre application.
+
 ## Ce que l'on n'obtient pas
 
 | Manque | Pourquoi | Conséquence |
@@ -26,8 +40,9 @@ faite, il est la seule chose qui sépare un visiteur de la console de surveillan
 
 ## Avant de commencer
 
-1. **Un nom de domaine qui désigne déjà le serveur.** Un enregistrement `A` vers
-   l'adresse IPv4 du VPS. À vérifier avant toute autre chose :
+1. **Un sous-domaine qui désigne déjà le serveur.** Un enregistrement `A` vers
+   l'adresse IPv4 du VPS — un sous-domaine par application, la racine restant
+   libre pour une vitrine. À vérifier avant toute autre chose :
 
    ```bash
    dig +short sasi.votredomaine.site
@@ -114,7 +129,43 @@ source. Comptez quelques minutes la première fois.
 Sans `--demo`, aucune source de mesures n'est active et les écrans restent vides
 — c'est le mode qui conviendra quand le vrai jumeau publiera.
 
-## 4. Vérifier
+## 4. Ajouter la seconde application
+
+Rien à refaire côté SASI. Deux conditions pour l'application qui arrive :
+
+1. **Ne publier aucun port** — pas de `ports:` dans sa composition, sinon elle
+   se disputera les ports 80 et 443 avec le frontal.
+2. **Rejoindre le réseau `frontal`** avec un alias stable :
+
+   ```yaml
+   services:
+     son-serveur:
+       networks:
+         frontal:
+           aliases: [autre-app]
+   networks:
+     frontal:
+       name: frontal
+       external: true
+   ```
+
+Puis déposer son fichier d'acheminement et recharger :
+
+```bash
+cp config/proxy/sites/exemple-seconde-app.caddy.modele \
+   config/proxy/sites/autre.caddy
+nano config/proxy/sites/autre.caddy      # nom de domaine et alias
+./outils/deployer.sh --frontal
+```
+
+Le rechargement relit la configuration **sans couper les connexions en cours** :
+l'autre application ne s'en aperçoit pas, et SASI non plus.
+
+N'oubliez pas l'enregistrement `A` du nouveau sous-domaine : le frontal répond
+`421 Hôte inconnu` à tout nom qu'il ne connaît pas, ce qui évite qu'un tiers
+fasse pointer son domaine vers votre serveur et obtienne un certificat en votre nom.
+
+## 5. Vérifier
 
 ```bash
 ./outils/deployer.sh --etat
@@ -125,7 +176,7 @@ Puis ouvrir `https://sasi.votredomaine.site` dans un navigateur. Les niveaux et
 les alertes arrivent par WebSocket, donc instantanément ; les courbes se
 rafraîchissent toutes les 10 secondes, soit la cadence même des mesures.
 
-## 5. Sauvegarder
+## 6. Sauvegarder
 
 Deux niveaux, complémentaires :
 
@@ -171,11 +222,14 @@ images. Le script ne touche jamais à la base.
 | Mot de passe refusé | Empreinte bcrypt tronquée par un `$` non protégé | Guillemets simples dans `.env` |
 | Écrans vides | Aucune source de mesures | `./outils/deployer.sh --demo` |
 | Un service redémarre en boucle | Mot de passe du serveur de messages désaccordé | `docker compose -f docker-compose.production.yml logs ia` |
+| `421 Hôte inconnu` | Aucun fichier d'acheminement pour ce domaine | `ls config/proxy/sites/` |
+| Le frontal refuse de démarrer | Les ports 80 ou 443 sont déjà pris | `sudo ss -tlnp \| grep -E ':80\|:443'` |
 | Interface lente | Mémoire saturée pendant un entraînement | `free -h`, et vérifier l'échange |
 
 Journaux d'un service : `docker compose -f docker-compose.production.yml logs -f <service>`,
-où `<service>` vaut `caddy`, `api`, `ia`, `alertes`, `connecteur`, `base`,
-`mosquitto` ou `jumeau`.
+où `<service>` vaut `api`, `ia`, `alertes`, `connecteur`, `base`, `mosquitto` ou
+`jumeau`. Pour le frontal, qui vit à part :
+`docker compose -f config/proxy/docker-compose.yml logs -f caddy`.
 
 ## Compatibilité ARM64, vérifiée
 

@@ -1,9 +1,7 @@
-# Porte d'entrée du système : chiffrement, mot de passe, acheminement.
-#
-# Caddy obtient et renouvelle seul le certificat Let's Encrypt du domaine, à
-# condition que celui-ci pointe déjà vers la machine.
+# SASI — surveillance thermique prédictive.
+# L'application rejoint le réseau « frontal » sous le nom « sasi-api ».
 
-{$DOMAINE} {
+{$DOMAINE_SASI:sasi.the7ing.site} {
 	encode zstd gzip
 
 	# Garde provisoire. L'application n'a pas encore de comptes réels — le rôle
@@ -16,7 +14,7 @@
 
 	# Le serveur d'application sert aussi l'interface compilée ; le suivi en
 	# temps réel passe par la même adresse et Caddy le relaie sans réglage.
-	reverse_proxy api:8000
+	reverse_proxy sasi-api:8000
 
 	header {
 		Strict-Transport-Security "max-age=31536000"
@@ -27,7 +25,7 @@
 	}
 
 	log {
-		output file /var/log/caddy/acces.log {
+		output file /var/log/caddy/sasi.log {
 			roll_size 10MiB
 			roll_keep 5
 		}

@@ -1,0 +1,43 @@
+# Frontal partagé : un seul Caddy pour toutes les applications du serveur.
+#
+#     cd config/proxy && docker compose up -d
+#
+# Deux applications ne peuvent pas occuper les ports 80 et 443 en même temps.
+# Un frontal unique les détient, et achemine chaque requête selon le nom de
+# domaine demandé. Chaque application derrière lui ne publie plus aucun port :
+# elle rejoint simplement le réseau « frontal » et se laisse appeler par son nom.
+#
+# Ce frontal vit à part des applications, volontairement : redémarrer SASI ne
+# doit pas interrompre l'autre application, et inversement.
+
+name: frontal
+
+services:
+
+  caddy:
+    image: caddy:2-alpine
+    ports: ["80:80", "443:443"]
+    environment:
+      # Réglages lus dans sasi-ia/.env, que outils/deployer.sh lui transmet.
+      DOMAINE_SASI: ${DOMAINE:?définissez DOMAINE dans .env}
+      ACCES_UTILISATEUR: ${ACCES_UTILISATEUR:?définissez ACCES_UTILISATEUR dans .env}
+      ACCES_EMPREINTE: ${ACCES_EMPREINTE:?définissez ACCES_EMPREINTE dans .env}
+      COURRIEL_ADMINISTRATEUR: ${COURRIEL_ADMINISTRATEUR:-}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./sites:/etc/caddy/sites:ro      # un fichier .caddy par application
+      - caddy_data:/data                 # certificats : à conserver, sinon
+      - caddy_config:/config             #   Let's Encrypt finit par refuser
+      - caddy_journaux:/var/log/caddy
+    networks: [frontal]
+    restart: unless-stopped
+
+networks:
+  frontal:
+    name: frontal
+    external: true          # créé une fois : docker network create frontal
+
+volumes:
+  caddy_data:
+  caddy_config:
+  caddy_journaux:

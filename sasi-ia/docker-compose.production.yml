@@ -3,8 +3,10 @@
 #     docker compose -f docker-compose.production.yml up -d --build
 #
 # Ce qui change par rapport à docker-compose.yml, destiné au développement :
-#   - aucun port n'est publié sauf 80 et 443 : ni la base, ni le serveur de
-#     messages ne sont joignables depuis Internet ;
+#   - aucun port n'est publié, pas même 80 et 443 : le frontal partagé les
+#     détient (config/proxy/), pour que plusieurs applications cohabitent sur
+#     le même serveur. Ni la base ni le serveur de messages ne sont joignables
+#     depuis Internet ;
 #   - le serveur de messages exige un compte ;
 #   - le code est inclus dans les images, non monté depuis le disque, pour que
 #     le conteneur qui tourne soit exactement celui qui a été bâti ;
@@ -26,6 +28,7 @@ x-python: &python
     SASI_MQTT_UTILISATEUR: ${MQTT_UTILISATEUR:?définissez MQTT_UTILISATEUR dans .env}
     SASI_MQTT_MOT_DE_PASSE: ${MQTT_MOT_DE_PASSE:?définissez MQTT_MOT_DE_PASSE dans .env}
     SASI_BASE: postgresql://sasi:${MOT_DE_PASSE_BASE:?définissez MOT_DE_PASSE_BASE dans .env}@base:5432/sasi
+  networks: [interne]
   volumes: &volumes_travail
     - modeles:/app/modeles
     - retours:/app/retours
@@ -38,23 +41,9 @@ x-python: &python
 
 services:
 
-  caddy:                          # chiffrement, mot de passe, acheminement
-    image: caddy:2-alpine
-    ports: ["80:80", "443:443"]
-    environment:
-      DOMAINE: ${DOMAINE:?définissez DOMAINE dans .env}
-      ACCES_UTILISATEUR: ${ACCES_UTILISATEUR:?définissez ACCES_UTILISATEUR dans .env}
-      ACCES_EMPREINTE: ${ACCES_EMPREINTE:?définissez ACCES_EMPREINTE dans .env}
-    volumes:
-      - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data            # certificats : à conserver, sinon Let's Encrypt
-      - caddy_config:/config        #   refuse de nouvelles demandes trop fréquentes
-      - caddy_journaux:/var/log/caddy
-    depends_on: [api]
-    restart: unless-stopped
-
   mosquitto:                      # serveur de messages, compte obligatoire
     image: eclipse-mosquitto:2
+    networks: [interne]
     volumes:
       - ./config/mosquitto.production.conf:/mosquitto/config/mosquitto.conf:ro
       - mosquitto_config:/mosquitto/config
@@ -64,6 +53,7 @@ services:
 
   base:                           # PostgreSQL + TimescaleDB
     image: timescale/timescaledb:latest-pg16
+    networks: [interne]
     environment:
       POSTGRES_USER: sasi
       POSTGRES_PASSWORD: ${MOT_DE_PASSE_BASE:?définissez MOT_DE_PASSE_BASE dans .env}
@@ -90,6 +80,10 @@ services:
       mosquitto: {condition: service_started}
     restart: unless-stopped
     expose: ["8000"]
+    networks:
+      interne:
+      frontal:
+        aliases: [sasi-api]      # le nom sous lequel le frontal l'appelle
 
   connecteur:                     # réception, contrôles, enregistrement
     <<: *python
@@ -110,10 +104,13 @@ services:
     command: python -u outils/direct.py ${SASI_SITE:-brasserie} --panne ${PERIODE_PANNE_S:-900}
     profiles: ["demonstration"]
 
+networks:
+  interne:                        # entre services de SASI, invisible du dehors
+  frontal:                        # partagé avec les autres applications
+    name: frontal
+    external: true                # docker network create frontal
+
 volumes:
-  caddy_data:
-  caddy_config:
-  caddy_journaux:
   mosquitto_config:
   mosquitto_data:
   base_data:
