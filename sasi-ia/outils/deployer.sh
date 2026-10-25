@@ -58,6 +58,16 @@ verifier_prealables() {
            echo "    docker run --rm caddy:2-alpine caddy hash-password --plaintext 'votre-mot-de-passe'"
            exit 1;;
     esac
+    # Le mot de passe de la base voyage dans une URL (postgresql://sasi:…@base).
+    # Un « / » y clôt l'autorité : la connexion échouerait sur un message obscur.
+    case "$MOT_DE_PASSE_BASE" in
+        *[/@:?\#\[\]%\ ]*)
+           rouge "MOT_DE_PASSE_BASE contient un caractère interdit dans une URL."
+           echo "    Caractères à éviter : / @ : ? # [ ] % et l'espace."
+           echo "    Engendrez-le ainsi :  openssl rand -hex 24"
+           exit 1;;
+    esac
+
     vert "  .env complet — domaine $DOMAINE"
 
     # Le certificat ne s'obtient que si le domaine désigne déjà cette machine.

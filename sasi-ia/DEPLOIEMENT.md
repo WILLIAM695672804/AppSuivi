@@ -101,10 +101,16 @@ cp .env.exemple .env
 Engendrer les secrets — **ne les choisissez pas à la main** :
 
 ```bash
-openssl rand -base64 24                     # pour MOT_DE_PASSE_BASE
-openssl rand -base64 24                     # pour MQTT_MOT_DE_PASSE
+openssl rand -hex 24                        # pour MOT_DE_PASSE_BASE
+openssl rand -hex 24                        # pour MQTT_MOT_DE_PASSE
 docker run --rm caddy:2-alpine caddy hash-password --plaintext 'votre-mot-de-passe'
 ```
+
+`-hex` et non `-base64` : le mot de passe de la base voyage dans une URL
+(`postgresql://sasi:…@base:5432/sasi`), où un `/` — que l'alphabet base64
+produit une fois sur deux — clôt l'autorité. La connexion échouerait alors sur
+un message sans rapport avec sa cause. `outils/deployer.sh` refuse d'avancer si
+le mot de passe contient un tel caractère.
 
 Puis `nano .env` et remplir les six lignes. **L'empreinte bcrypt doit être entre
 guillemets simples** : elle contient des `$` que docker compose et bash
