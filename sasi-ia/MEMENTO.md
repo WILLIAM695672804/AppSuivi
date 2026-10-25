@@ -1,7 +1,7 @@
 # Mémento du serveur
 
 Serveur : `152.53.116.238` — Netcup VPS 500 ARM, Debian 13, ARM64.
-Interface : `https://sasi.the7ing.site` (accès libre, sans mot de passe).
+Interface : `https://smartpredict.the7ing.site` (accès libre, sans mot de passe).
 
 ## À faire une fois
 

@@ -1,7 +1,7 @@
 # SASI — surveillance thermique prédictive.
 # L'application rejoint le réseau « frontal » sous le nom « sasi-api ».
 
-{$DOMAINE_SASI:sasi.the7ing.site} {
+{$DOMAINE_SASI:smartpredict.the7ing.site} {
 	encode zstd gzip
 
 	# Accès libre, sur décision de William le 25/10/2026.

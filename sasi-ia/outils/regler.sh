@@ -60,7 +60,7 @@ sans_espace() {        # sans_espace <invite> <valeur par défaut>
     done
 }
 
-DOMAINE=$(sans_espace "Nom de domaine" "sasi.the7ing.site")
+DOMAINE=$(sans_espace "Nom de domaine" "smartpredict.the7ing.site")
 ACCES_UTILISATEUR=$(sans_espace "Compte, si vous gardez un mot de passe" "william")
 COURRIEL_ADMINISTRATEUR=$(demander "Courriel (avis d'expiration du certificat)" "")
 

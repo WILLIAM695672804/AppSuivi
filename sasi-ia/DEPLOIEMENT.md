@@ -17,7 +17,7 @@ les ports 80 et 443 en même temps, un **frontal partagé** les détient et
 achemine chaque requête selon le nom de domaine demandé :
 
 ```
-                            ┌─ sasi.the7ing.site  ──► SASI      (sasi-api:8000)
+                            ┌─ smartpredict.the7ing.site  ──► SASI      (sasi-api:8000)
 Internet ──► Caddy (80/443) ┤
      frontal partagé        └─ autre.the7ing.site ──► seconde application
 ```

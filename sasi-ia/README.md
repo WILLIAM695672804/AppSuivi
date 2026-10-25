@@ -3,7 +3,7 @@
 Première étape du projet : valider la méthode de détection sur des données publiques,
 sans matériel, sans jumeau numérique et sans partenaire.
 
-**En service depuis le 25/10/2026 sur `https://sasi.the7ing.site`.** Les
+**En service depuis le 25/10/2026 sur `https://smartpredict.the7ing.site`.** Les
 commandes du serveur — connexion, état, mise à jour, pannes courantes — sont
 dans **`MEMENTO.md`**, une ligne par commande. L'installation complète est dans
 `DEPLOIEMENT.md`, les décisions et les pannes rencontrées dans `JOURNAL.md`.
