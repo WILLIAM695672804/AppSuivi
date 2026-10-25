@@ -68,7 +68,16 @@ verifier_prealables() {
            exit 1;;
     esac
 
-    vert "  .env complet — domaine $DOMAINE"
+    # SASI_SITE désigne le fichier sites/<nom>.json. Un nom inventé ne se verrait
+    # qu'au versement du référentiel, après dix minutes de construction.
+    local site="${SASI_SITE:-brasserie}"
+    [ -f "sites/$site.json" ] || {
+        rouge "SASI_SITE=$site, or sites/$site.json n'existe pas."
+        echo "    Sites décrits : $(cd sites && ls *.json | sed 's/\.json$//' | tr '\n' ' ')"
+        echo "    Corrigez .env, ou réglez tout à neuf : bash outils/regler.sh --forcer"
+        exit 1; }
+
+    vert "  .env complet — domaine $DOMAINE, site $site"
 
     # Le certificat ne s'obtient que si le domaine désigne déjà cette machine.
     local attendue resolue
