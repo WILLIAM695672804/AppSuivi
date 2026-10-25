@@ -20,8 +20,11 @@ services:
     environment:
       # Réglages lus dans sasi-ia/.env, que outils/deployer.sh lui transmet.
       DOMAINE_SASI: ${DOMAINE:?définissez DOMAINE dans .env}
-      ACCES_UTILISATEUR: ${ACCES_UTILISATEUR:?définissez ACCES_UTILISATEUR dans .env}
-      ACCES_EMPREINTE: ${ACCES_EMPREINTE:?définissez ACCES_EMPREINTE dans .env}
+      # Sans « :? » : l'accès est libre depuis le 25/10/2026 et une empreinte
+      # vide est légitime. Avec « :? », docker compose refusait de démarrer le
+      # frontal — et c'est lui qui détient les ports 80 et 443.
+      ACCES_UTILISATEUR: ${ACCES_UTILISATEUR:-}
+      ACCES_EMPREINTE: ${ACCES_EMPREINTE:-}
       COURRIEL_ADMINISTRATEUR: ${COURRIEL_ADMINISTRATEUR:-}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
