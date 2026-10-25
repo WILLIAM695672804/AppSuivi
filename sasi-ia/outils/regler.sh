@@ -19,7 +19,9 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-rouge() { printf '\033[31m%s\033[0m\n' "$*"; }
+# Sur la sortie d'erreur : plusieurs de ces messages sont émis depuis une
+# substitution de commande, qui capturerait la sortie standard dans la valeur.
+rouge() { printf '\033[31m%s\033[0m\n' "$*" >&2; }
 vert()  { printf '\033[32m%s\033[0m\n' "$*"; }
 titre() { printf '\n\033[1m%s\033[0m\n' "$*"; }
 
@@ -44,10 +46,34 @@ demander() {           # demander <invite> <valeur par défaut>
     printf '%s' "${reponse:-$defaut}"
 }
 
-DOMAINE=$(demander "Nom de domaine" "sasi.the7ing.site")
-ACCES_UTILISATEUR=$(demander "Compte pour ouvrir l'interface" "william")
+# Une valeur avec espace ou guillemet traverse .env, puis échoue bien plus loin,
+# sur un message qui ne la mentionne pas. Autant la refuser ici.
+sans_espace() {        # sans_espace <invite> <valeur par défaut>
+    local valeur
+    while :; do
+        valeur=$(demander "$1" "$2")
+        case "$valeur" in
+            '')      rouge "  Valeur vide. Recommencez." ;;
+            *[\ \'\"]*) rouge "  Ni espace ni guillemet ici. Recommencez." ;;
+            *)       printf '%s' "$valeur"; return ;;
+        esac
+    done
+}
+
+DOMAINE=$(sans_espace "Nom de domaine" "sasi.the7ing.site")
+ACCES_UTILISATEUR=$(sans_espace "Compte pour ouvrir l'interface" "william")
 COURRIEL_ADMINISTRATEUR=$(demander "Courriel (avis d'expiration du certificat)" "")
-SASI_SITE=$(demander "Site surveillé" "brasserie")
+
+# SASI_SITE n'est pas un nom libre : c'est le fichier sites/<nom>.json qui
+# décrit les équipements et les caméras. Un nom inventé ferait échouer le
+# chargement de la base, à l'étape suivante, sur une erreur sans rapport.
+disponibles=$(cd sites && ls *.json 2>/dev/null | sed 's/\.json$//' | tr '\n' ' ')
+echo "  Sites décrits dans sites/ : $disponibles"
+while :; do
+    SASI_SITE=$(demander "Site surveillé (l'un de ceux-ci)" "brasserie")
+    [ -f "sites/$SASI_SITE.json" ] && break
+    rouge "  sites/$SASI_SITE.json n'existe pas. Choisissez parmi : $disponibles"
+done
 
 # Le mot de passe ne s'affiche pas, et il est demandé deux fois : une faute de
 # frappe ici ne se verrait qu'au moment de la connexion, sans message utile.
