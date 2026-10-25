@@ -1,7 +1,11 @@
-# Indispensable (environ 30 Mo) — suffit pour faire tourner toute la chaîne
+# Traitement des données — toute la chaîne en dépend (environ 30 Mo)
 numpy>=1.26
 pandas>=2.2
 
-# Recommandé (environ 90 Mo de plus) — modèle LightGBM, plus précis.
-# Sans lui, le programme bascule automatiquement sur un modèle de repli.
-# lightgbm>=4.3
+# Indispensable en service : les modèles livrés dans modeles/<site>/ sont des
+# modèles LightGBM, et ia/modeles_en_service.charger() les lit avec lgb.Booster.
+# L'entraînement sait se replier sur un modèle par tranches ; le service, non —
+# il s'arrête net sur « No module named 'lightgbm' ». Le serveur d'application
+# en a besoin aussi : c'est lui qui exécute les entraînements demandés depuis
+# l'écran, dans un fil de son propre processus (ia/travaux.py).
+lightgbm>=4.3
