@@ -194,10 +194,26 @@ fasse pointer son domaine vers votre serveur et obtienne un certificat en votre 
 
 ```bash
 ./outils/deployer.sh --etat
-curl -u william:motdepasse https://sasi.votredomaine.site/api/etat
+curl -fsS https://sasi.votredomaine.site/api/etat
 ```
 
-Puis ouvrir `https://sasi.votredomaine.site` dans un navigateur. Les niveaux et
+Puis ouvrir `https://sasi.votredomaine.site` dans un navigateur.
+
+**L'accès est libre, sans mot de passe**, sur décision du 25/10/2026. Qui
+connaît l'adresse peut consulter les écrans, mais aussi acquitter et clôturer
+des alertes, signaler un échauffement et lancer un entraînement — lequel occupe
+les deux cœurs du serveur plusieurs minutes. Les comptes réels de l'application
+restent à faire ; d'ici là, l'adresse elle-même est la seule discrétion.
+
+Pour rétablir une garde, deux blocs sont prêts en commentaire dans
+`config/proxy/sites/sasi.caddy` : le mot de passe sur tout le site, ou le mot de
+passe sur les seules requêtes qui modifient quelque chose — consultation libre,
+actions gardées. `ACCES_UTILISATEUR` et `ACCES_EMPREINTE` restent dans `.env`
+pour cela. Après décommentage :
+
+```bash
+docker compose -f config/proxy/docker-compose.yml --env-file .env restart
+``` Les niveaux et
 les alertes arrivent par WebSocket, donc instantanément ; les courbes se
 rafraîchissent toutes les 10 secondes, soit la cadence même des mesures.
 

@@ -61,7 +61,7 @@ sans_espace() {        # sans_espace <invite> <valeur par défaut>
 }
 
 DOMAINE=$(sans_espace "Nom de domaine" "sasi.the7ing.site")
-ACCES_UTILISATEUR=$(sans_espace "Compte pour ouvrir l'interface" "william")
+ACCES_UTILISATEUR=$(sans_espace "Compte, si vous gardez un mot de passe" "william")
 COURRIEL_ADMINISTRATEUR=$(demander "Courriel (avis d'expiration du certificat)" "")
 
 # SASI_SITE n'est pas un nom libre : c'est le fichier sites/<nom>.json qui
@@ -75,26 +75,33 @@ while :; do
     rouge "  sites/$SASI_SITE.json n'existe pas. Choisissez parmi : $disponibles"
 done
 
-# Le mot de passe ne s'affiche pas, et il est demandé deux fois : une faute de
-# frappe ici ne se verrait qu'au moment de la connexion, sans message utile.
+# Le mot de passe du frontal est facultatif depuis le 25/10/2026 : l'accès est
+# libre. L'empreinte reste écrite dans .env, et sert dès qu'on rétablit le bloc
+# « basic_auth » de config/proxy/sites/sasi.caddy.
+#
+# Il ne s'affiche pas et il est demandé deux fois : une faute de frappe ici ne
+# se verrait qu'au moment de la connexion, sans message utile.
+echo "  Laissez vide pour un accès sans mot de passe (c'est le réglage actuel"
+echo "  du frontal ; la ligne reste dans .env si vous le rétablissez un jour)."
+EMPREINTE=""
 while :; do
     printf "  Mot de passe pour ouvrir l'interface : "
     read -rs MDP </dev/tty; echo
+    [ -n "$MDP" ] || { vert "  accès libre, aucune empreinte écrite"; break; }
     printf "  Confirmez : "
     read -rs MDP2 </dev/tty; echo
-    [ -n "$MDP" ] || { rouge "  Vide. Recommencez."; continue; }
     [ "$MDP" = "$MDP2" ] || { rouge "  Les deux saisies diffèrent. Recommencez."; continue; }
     [ ${#MDP} -ge 8 ] || { rouge "  Huit caractères au minimum. Recommencez."; continue; }
+
+    titre "Calcul de l'empreinte du mot de passe"
+    EMPREINTE=$(docker run --rm caddy:2-alpine caddy hash-password --plaintext "$MDP")
+    case "$EMPREINTE" in
+        '$2a$'*|'$2b$'*|'$2y$'*) vert "  empreinte bcrypt obtenue" ;;
+        *) rouge "Caddy n'a pas rendu une empreinte bcrypt :"; echo "$EMPREINTE"; exit 1 ;;
+    esac
     break
 done
-
-titre "Calcul de l'empreinte du mot de passe"
-EMPREINTE=$(docker run --rm caddy:2-alpine caddy hash-password --plaintext "$MDP")
 unset MDP MDP2
-case "$EMPREINTE" in
-    '$2a$'*|'$2b$'*|'$2y$'*) vert "  empreinte bcrypt obtenue" ;;
-    *) rouge "Caddy n'a pas rendu une empreinte bcrypt :"; echo "$EMPREINTE"; exit 1 ;;
-esac
 
 # « -hex » et non « -base64 » : le mot de passe de la base voyage dans une URL
 # (postgresql://sasi:…@base:5432/sasi), où un « / » clôt l'autorité.
@@ -131,7 +138,13 @@ fi
 sed 's/^\(MOT_DE_PASSE_BASE\|MQTT_MOT_DE_PASSE\)=.*/\1=…/' .env | sed 's/^/  /'
 
 titre "Fichier .env écrit"
-echo "  Conservez le mot de passe de l'interface : il n'est stocké nulle part,"
-echo "  seule son empreinte l'est. Pour le changer : bash outils/regler.sh --forcer"
+if [ -n "$EMPREINTE" ]; then
+    echo "  Conservez le mot de passe de l'interface : il n'est stocké nulle part,"
+    echo "  seule son empreinte l'est. Pour le changer : bash outils/regler.sh --forcer"
+    echo "  Il ne servira qu'une fois rétabli le bloc « basic_auth » de"
+    echo "  config/proxy/sites/sasi.caddy — le frontal laisse l'accès libre."
+else
+    echo "  Accès libre : l'interface s'ouvre sans mot de passe."
+fi
 echo
 echo "  Étape suivante :  ./outils/deployer.sh --demo"

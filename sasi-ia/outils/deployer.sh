@@ -17,8 +17,10 @@ set -euo pipefail
 COMPOSITION="docker-compose.production.yml"
 FRONTAL="config/proxy/docker-compose.yml"
 RESEAU="frontal"
-OBLIGATOIRES=(DOMAINE ACCES_UTILISATEUR ACCES_EMPREINTE MOT_DE_PASSE_BASE
-              MQTT_UTILISATEUR MQTT_MOT_DE_PASSE)
+# ACCES_UTILISATEUR et ACCES_EMPREINTE n'y figurent plus : depuis le
+# 25/10/2026, le frontal laisse l'accès libre. Elles restent exploitées si le
+# bloc « basic_auth » de config/proxy/sites/sasi.caddy est rétabli.
+OBLIGATOIRES=(DOMAINE MOT_DE_PASSE_BASE MQTT_UTILISATEUR MQTT_MOT_DE_PASSE)
 
 cd "$(dirname "$0")/.."
 
@@ -52,8 +54,10 @@ verifier_prealables() {
         rouge "Réglages manquants dans .env : ${manquantes[*]}"
         exit 1
     fi
-    case "$ACCES_EMPREINTE" in
-        '$2a$'*|'$2b$'*|'$2y$'*) ;;
+    # Vérifiée seulement si elle est là : une empreinte tronquée serait refusée
+    # sans message, et c'est encore vrai si la garde est rétablie plus tard.
+    case "${ACCES_EMPREINTE:-}" in
+        ''|'$2a$'*|'$2b$'*|'$2y$'*) ;;
         *) rouge "ACCES_EMPREINTE ne ressemble pas à une empreinte bcrypt."
            echo "    docker run --rm caddy:2-alpine caddy hash-password --plaintext 'votre-mot-de-passe'"
            exit 1;;
@@ -227,7 +231,7 @@ verser_le_referentiel
 etat
 
 titre "Terminé"
-echo "  Interface : https://$DOMAINE  (compte « $ACCES_UTILISATEUR »)"
+echo "  Interface : https://$DOMAINE  (accès libre, sans mot de passe)"
 echo "  Suivre les journaux : docker compose -f $COMPOSITION logs -f"
 [ "$AVEC_DEMONSTRATION" = "1" ] \
     && echo "  Le jumeau de démonstration produit des mesures : les écrans doivent vivre." \

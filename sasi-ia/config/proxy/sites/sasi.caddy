@@ -4,13 +4,28 @@
 {$DOMAINE_SASI:sasi.the7ing.site} {
 	encode zstd gzip
 
-	# Garde provisoire. L'application n'a pas encore de comptes réels — le rôle
-	# se choisit dans une liste —, et elle permet d'acquitter et de clôturer des
-	# alertes. Tant que l'authentification n'est pas faite, ce mot de passe est
-	# la seule chose qui sépare un visiteur de la console de surveillance.
-	basic_auth {
-		{$ACCES_UTILISATEUR} {$ACCES_EMPREINTE}
-	}
+	# Accès libre, sur décision de William le 25/10/2026.
+	#
+	# Ce qu'il faut en savoir : l'application n'a pas encore de comptes réels —
+	# le rôle se choisit dans une liste — et elle permet d'acquitter et de
+	# clôturer des alertes, de signaler un échauffement, et de lancer un
+	# entraînement, lequel occupe les deux cœurs du serveur plusieurs minutes.
+	# Qui connaît l'adresse peut tout cela.
+	#
+	# Pour rétablir la garde, décommentez ce bloc et relancez le frontal
+	# (ACCES_UTILISATEUR et ACCES_EMPREINTE sont restés dans .env) :
+	#
+	#     basic_auth {
+	#         {$ACCES_UTILISATEUR} {$ACCES_EMPREINTE}
+	#     }
+	#
+	# Pour un accès libre en consultation mais gardé sur les actions, la garde
+	# se limite aux méthodes qui modifient :
+	#
+	#     @ecritures method POST PUT PATCH DELETE
+	#     basic_auth @ecritures {
+	#         {$ACCES_UTILISATEUR} {$ACCES_EMPREINTE}
+	#     }
 
 	# Le serveur d'application sert aussi l'interface compilée ; le suivi en
 	# temps réel passe par la même adresse et Caddy le relaie sans réglage.
