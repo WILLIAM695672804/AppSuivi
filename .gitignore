@@ -29,3 +29,5 @@ Thumbs.db
 # Secrets du serveur en ligne : jamais dans Git (voir .env.exemple)
 sasi-ia/.env
 .env
+sasi-ia/.env.precedent
+.env.precedent

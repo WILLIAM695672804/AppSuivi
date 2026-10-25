@@ -98,7 +98,26 @@ cd AppSuivi/sasi-ia
 cp .env.exemple .env
 ```
 
-Engendrer les secrets — **ne les choisissez pas à la main** :
+Un script écrit ce fichier pour vous ; c'est la voie recommandée :
+
+```bash
+bash outils/regler.sh
+```
+
+Il demande le domaine, le compte et le mot de passe de l'interface, calcule
+l'empreinte, engendre les deux mots de passe internes, écrit `.env` en `600` et
+vérifie que docker compose le relit sans erreur. Il refuse d'écraser un `.env`
+existant sans `--forcer`, et en garde alors une copie sous `.env.precedent`.
+
+**Pourquoi un script plutôt que des commandes à coller.** Un terminal distant
+dénature le collage de trois façons, chacune constatée sur le serveur : il
+indente les lignes, et le délimiteur d'un *heredoc* n'est plus reconnu en début
+de ligne ; il coupe les lignes longues en y insérant de vrais retours à la
+ligne, qui scindent la commande ; et `read` consomme la ligne suivante du
+collage au lieu d'attendre une frappe. Le script ne traverse pas le collage :
+tout se passe dans un seul processus.
+
+Les secrets à la main, si vous y tenez — **ne les choisissez pas vous-même** :
 
 ```bash
 openssl rand -hex 24                        # pour MOT_DE_PASSE_BASE
