@@ -157,7 +157,12 @@ if __name__ == "__main__":
     analyseur.add_argument("lot", nargs="?", default="B")
     analyseur.add_argument("--vitesse", type=float, default=60.0,
                            help="1 = temps réel, 60 = une minute par seconde")
-    analyseur.add_argument("--serveur", default="localhost")
+    # Sans valeur, messagerie.connecter() lit SASI_MQTT. Un défaut « localhost »
+    # l'emporterait sur l'environnement : dans un conteneur, l'outil chercherait
+    # le serveur de messages chez lui, et la connexion serait refusée.
+    analyseur.add_argument("--serveur", default=None,
+                           help="adresse du serveur de messages "
+                                "(défaut : SASI_MQTT, sinon localhost)")
     analyseur.add_argument("--limite", type=int, default=None,
                            help="nombre d'instants à publier (essais)")
     analyseur.add_argument("--maintenant", action="store_true",

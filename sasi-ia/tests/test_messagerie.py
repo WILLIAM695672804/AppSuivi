@@ -111,6 +111,26 @@ def test_les_quatre_services_passent_par_le_module():
         assert "mqtt.Client(" not in texte, f"{nom} crée encore son client lui-même"
 
 
+def test_aucun_outil_n_impose_localhost_en_defaut():
+    """Un défaut « localhost » l'emporterait sur SASI_MQTT.
+
+    Constaté sur le serveur : le jumeau de démonstration redémarrait en boucle
+    sur « Connection refused », parce qu'argparse lui donnait « localhost » et
+    que messagerie.connecter() respecte l'adresse reçue. Il cherchait le serveur
+    de messages dans son propre conteneur.
+    """
+    racine = Path(__file__).resolve().parents[1]
+    for chemin in sorted(racine.glob("**/*.py")):
+        if "venv" in chemin.parts or chemin.parts[-2:-1] == ("tests",):
+            continue
+        texte = chemin.read_text(encoding="utf-8")
+        for ligne in texte.splitlines():
+            if "--serveur" in ligne and "default=" in ligne:
+                assert "localhost" not in ligne, (
+                    f"{chemin.relative_to(racine)} impose localhost ; "
+                    "laissez default=None pour que SASI_MQTT décide")
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     echecs = 0

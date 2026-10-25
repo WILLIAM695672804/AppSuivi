@@ -242,7 +242,12 @@ def principal():
                            help="vitesse du planning du site (défaut : 2 h par minute)")
     analyseur.add_argument("--panne", type=float, default=300.0,
                            help="secondes entre deux pannes (défaut : 300)")
-    analyseur.add_argument("--serveur", default="localhost")
+    # Sans valeur, messagerie.connecter() lit SASI_MQTT. Un défaut « localhost »
+    # l'emporterait sur l'environnement : dans un conteneur, l'outil chercherait
+    # le serveur de messages chez lui, et la connexion serait refusée.
+    analyseur.add_argument("--serveur", default=None,
+                           help="adresse du serveur de messages "
+                                "(défaut : SASI_MQTT, sinon localhost)")
     analyseur.add_argument("--graine", type=int, default=2026)
 
     precis = analyseur.add_argument_group("scénario précis")
