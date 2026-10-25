@@ -13,6 +13,13 @@ RUN npm run build
 
 FROM python:3.12-slim
 WORKDIR /app
+# LightGBM est compilé avec OpenMP et charge libgomp au premier import. L'image
+# « slim » ne la porte pas : sans cette ligne, le service d'IA s'arrête sur
+# « OSError: libgomp.so.1: cannot open shared object file ». La roue installée
+# par pip ne déclare pas cette dépendance, qui n'est pas un paquet Python.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt requirements-app.txt ./
 RUN pip install --no-cache-dir -r requirements.txt -r requirements-app.txt
 COPY . .

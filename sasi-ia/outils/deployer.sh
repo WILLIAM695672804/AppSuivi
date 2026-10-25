@@ -177,10 +177,22 @@ etat() {
     titre "Certificat et accès"
     local domaine="${DOMAINE:-}"
     if [ -n "$domaine" ]; then
-        if curl -fsS --max-time 15 -o /dev/null -w '  HTTPS : %{http_code}\n' \
-                "https://$domaine/api/etat" 2>/dev/null; then :; else
-            echo "  HTTPS : pas encore de réponse (le certificat peut prendre une minute)"
-        fi
+        # « curl -f » tenait le 401 pour un échec, et l'état affichait « pas
+        # encore de réponse » alors que le certificat était obtenu et que le
+        # mot de passe était demandé. Le code se juge, il ne se subit pas.
+        local code
+        code=$(curl -sS --max-time 15 -o /dev/null -w '%{http_code}' \
+                    "https://$domaine/api/etat" 2>/dev/null || echo 000)
+        case "$code" in
+            200) vert  "  HTTPS $code — certificat obtenu, application joignable" ;;
+            401) vert  "  HTTPS $code — certificat obtenu, le mot de passe est demandé" ;;
+            000) rouge "  HTTPS : aucune réponse. Le certificat peut demander une minute."
+                 echo  "    Journal du frontal : docker compose -f $FRONTAL logs --tail 20" ;;
+            502|503)
+                 rouge "  HTTPS $code — le frontal répond, mais pas l'application."
+                 echo  "    docker compose -f $COMPOSITION logs --tail 20 api" ;;
+            *)   rouge "  HTTPS $code — réponse inattendue" ;;
+        esac
         echo "  Interface : https://$domaine"
     fi
     titre "Derniers journaux"
