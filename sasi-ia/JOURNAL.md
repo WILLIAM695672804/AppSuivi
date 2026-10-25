@@ -30,6 +30,41 @@ Les plus récentes en haut.
 
 ---
 
+## 25/10/2026 — Première mise en service : trois pannes, une seule famille
+
+**Constaté.** La pile de production, validée statiquement — 222 tests, deux
+compositions relues par `docker compose config`, compatibilité ARM64 vérifiée
+composant par composant — n'avait jamais été **exécutée**. Son premier
+démarrage sur le VPS Netcup a révélé trois pannes, toutes dans le quart d'heure.
+
+| Panne | Cause | Ce qui la rendait invisible |
+|---|---|---|
+| `sasi-ia` : `No module named 'lightgbm'` | la ligne était commentée dans `requirements.txt` | le commentaire annonçait un repli automatique, qui existe à l'entraînement et non au chargement des modèles en service |
+| `sasi-jumeau` : `Connection refused` | `--serveur` avait pour défaut `localhost` | ce défaut l'emportait sur `SASI_MQTT=mosquitto` ; le jumeau cherchait le serveur de messages dans son propre conteneur |
+| `sasi-ia` : `libgomp.so.1: cannot open shared object file` | LightGBM est compilé avec OpenMP | la roue installée par pip ne déclare pas cette bibliothèque, qui n'est pas un paquet Python ; l'image `slim` ne la porte pas |
+
+**Ce qu'elles ont en commun.** Aucune n'est une erreur de logique, et aucune
+n'était détectable par un test : ce sont trois hypothèses sur l'environnement,
+vraies sur le poste de développement, fausses dans un conteneur. Une
+bibliothèque installée depuis longtemps dans le `venv` et qu'on a crue
+optionnelle. Un défaut d'argument commode en local. Une dépendance système que
+la machine de développement portait déjà, pour une autre raison.
+
+**Décidé.** Deux tests verrouillent ce qui peut l'être : aucun outil n'impose
+plus `localhost` en défaut sur `--serveur`, et `outils/deployer.sh` refuse un
+`SASI_SITE` qui ne corresponde pas à un fichier `sites/<nom>.json`. Le reste
+tient aux images, désormais exactes.
+
+**Aussi.** Le relevé d'état mentait : `curl -f` tenait le `401` du mot de passe
+pour un échec et annonçait « pas encore de réponse » alors que le certificat
+était obtenu. Un contrôle qui se trompe sur un succès est pire qu'une absence
+de contrôle — il aurait envoyé chercher une panne ailleurs.
+
+**La leçon tient.** « Un code qui n'a jamais tourné contre une vraie base ne
+fonctionne pas : il attend seulement de rencontrer ses erreurs. » Trois pannes
+annoncées, trois pannes rencontrées, un quart d'heure pour les lever. La réserve
+avait été dite avant le départ ; c'est ce qui a rendu la séance tranquille.
+
 ## 23/09/2026 — Prévision du risque : le seuil visé
 
 **Constaté.** La probabilité d'atteindre le seuil d'**urgence** ne devançait
